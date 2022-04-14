@@ -279,37 +279,58 @@ hxd_App.prototype = {
 	}
 	,__class__: hxd_App
 };
-var Main = function() {
+var Main = function(numObjects,numParticles) {
+	if(numParticles == null) {
+		numParticles = 10000;
+	}
+	if(numObjects == null) {
+		numObjects = 1000;
+	}
 	hxd_App.call(this);
+	this.numObjects = numObjects;
+	this.numParticles = numParticles;
 };
 $hxClasses["Main"] = Main;
 Main.__name__ = "Main";
 Main.main = function() {
 	hxd_Res.set_loader(new hxd_res_Loader(new hxd_fs_EmbedFileSystem(haxe_Unserializer.run("oy8:rock.hmdty15:treeTexture.pngty8:tree.hmdty15:rockTexture.jpgtg"))));
-	new Main();
-	haxe_Log.trace("Rodando na Web",{ fileName : "src/Main.hx", lineNumber : 49, className : "Main", methodName : "main"});
+	var $window = hxd_Window.getInstance();
+	if($window.get_width() < 900) {
+		haxe_Log.trace("Rodando versão leve",{ fileName : "src/Main.hx", lineNumber : 86, className : "Main", methodName : "main"});
+		new Main(600,3000);
+	} else {
+		haxe_Log.trace("Rodando versão completa",{ fileName : "src/Main.hx", lineNumber : 89, className : "Main", methodName : "main"});
+		new Main();
+	}
+	haxe_Log.trace("Rodando na Web",{ fileName : "src/Main.hx", lineNumber : 93, className : "Main", methodName : "main"});
 };
 Main.__super__ = hxd_App;
 Main.prototype = $extend(hxd_App.prototype,{
 	world: null
 	,shadow: null
+	,numObjects: null
+	,numParticles: null
 	,init: function() {
 		this.world = new h3d_scene_World(64,128,this.s3d);
 		var t = this.world.loadModel(hxd_Res.get_loader().loadCache("tree.hmd",hxd_res_Model));
 		var r = this.world.loadModel(hxd_Res.get_loader().loadCache("rock.hmd",hxd_res_Model));
 		var _g = 0;
-		while(_g < 1000) {
+		var _g1 = this.numObjects;
+		while(_g < _g1) {
 			var i = _g++;
-			this.world.add(Std.random(2) == 0 ? t : r,Math.random() * 128,Math.random() * 128,0,1.2 + hxd_Math.srand(0.4),hxd_Math.srand(Math.PI));
+			var model = Std.random(2) == 0 ? t : r;
+			var x = Math.random() * 128;
+			var y = Math.random() * 128;
+			this.world.add(model,x,y,0,1.2 + hxd_Math.srand(0.4),hxd_Math.srand(Math.PI));
 		}
 		this.world.done();
-		new h3d_scene_fwd_DirLight(new h3d_Vector(0.3,-0.4,-0.9),this.s3d);
-		var _this = this.s3d.lightSystem.ambientLight;
-		_this.x = 0.564705882352941169;
-		_this.y = 0.564705882352941169;
-		_this.z = 0.564705882352941169;
-		_this.w = 0.;
-		var _this1 = this.s3d.camera.target;
+		this.lightSetup();
+		this.shadowsSetup();
+		this.particlesSetup();
+		this.cameraSetup();
+	}
+	,cameraSetup: function() {
+		var _this = this.s3d.camera.target;
 		var x = 72;
 		var y = 72;
 		var z = 0;
@@ -322,11 +343,11 @@ Main.prototype = $extend(hxd_App.prototype,{
 		if(x == null) {
 			x = 0.;
 		}
-		_this1.x = x;
-		_this1.y = y;
-		_this1.z = z;
-		_this1.w = 1.;
-		var _this2 = this.s3d.camera.pos;
+		_this.x = x;
+		_this.y = y;
+		_this.z = z;
+		_this.w = 1.;
+		var _this1 = this.s3d.camera.pos;
 		var x1 = 120;
 		var y1 = 120;
 		var z1 = 40;
@@ -339,32 +360,15 @@ Main.prototype = $extend(hxd_App.prototype,{
 		if(x1 == null) {
 			x1 = 0.;
 		}
-		_this2.x = x1;
-		_this2.y = y1;
-		_this2.z = z1;
-		_this2.w = 1.;
-		this.shadow = this.s3d.renderer.getPass(h3d_pass_DefaultShadowMap);
-		this.shadow.set_size(2048);
-		this.shadow.power = 200;
-		this.shadow.blur.set_radius(0);
-		this.shadow.bias *= 0.1;
-		var _this3 = this.shadow.color;
-		var x2 = 0.7;
-		var y2 = 0.7;
-		var z2 = 0.7;
-		if(z2 == null) {
-			z2 = 0.;
-		}
-		if(y2 == null) {
-			y2 = 0.;
-		}
-		if(x2 == null) {
-			x2 = 0.;
-		}
-		_this3.x = x2;
-		_this3.y = y2;
-		_this3.z = z2;
-		_this3.w = 1.;
+		_this1.x = x1;
+		_this1.y = y1;
+		_this1.z = z1;
+		_this1.w = 1.;
+		this.s3d.camera.zNear = 1;
+		this.s3d.camera.zFar = 100;
+		new h3d_scene_CameraController(null,this.s3d).loadFromCamera();
+	}
+	,particlesSetup: function() {
 		var parts = new h3d_parts_GpuParticles(this.world);
 		var g = parts.addGroup();
 		g.needRebuild = true;
@@ -373,10 +377,11 @@ Main.prototype = $extend(hxd_App.prototype,{
 		g.gravity = 1;
 		g.needRebuild = true;
 		g.life = 10;
-		if(10000 > g.nparts) {
+		var n = this.numParticles;
+		if(n > g.nparts) {
 			g.needRebuild = true;
 		}
-		g.nparts = 10000;
+		g.nparts = n;
 		g.needRebuild = true;
 		g.emitMode = h3d_parts_GpuEmitMode.CameraBounds;
 		var b = new h3d_col_Bounds();
@@ -387,9 +392,38 @@ Main.prototype = $extend(hxd_App.prototype,{
 		b.yMax = 20;
 		b.zMax = 55;
 		parts.set_volumeBounds(b);
-		this.s3d.camera.zNear = 1;
-		this.s3d.camera.zFar = 100;
-		new h3d_scene_CameraController(null,this.s3d).loadFromCamera();
+	}
+	,shadowsSetup: function() {
+		this.shadow = this.s3d.renderer.getPass(h3d_pass_DefaultShadowMap);
+		this.shadow.set_size(2048);
+		this.shadow.power = 200;
+		this.shadow.blur.set_radius(0);
+		this.shadow.bias *= 0.1;
+		var _this = this.shadow.color;
+		var x = 0.7;
+		var y = 0.7;
+		var z = 0.7;
+		if(z == null) {
+			z = 0.;
+		}
+		if(y == null) {
+			y = 0.;
+		}
+		if(x == null) {
+			x = 0.;
+		}
+		_this.x = x;
+		_this.y = y;
+		_this.z = z;
+		_this.w = 1.;
+	}
+	,lightSetup: function() {
+		new h3d_scene_fwd_DirLight(new h3d_Vector(0.3,-0.4,-0.9),this.s3d);
+		var _this = this.s3d.lightSystem.ambientLight;
+		_this.x = 0.564705882352941169;
+		_this.y = 0.564705882352941169;
+		_this.z = 0.564705882352941169;
+		_this.w = 0.;
 	}
 	,__class__: Main
 });
