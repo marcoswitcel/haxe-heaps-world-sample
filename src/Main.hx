@@ -41,8 +41,8 @@ class Main extends hxd.App {
   }
   
   function cameraSetup() {
-    s3d.camera.target.set(72, 72, 0);
-    s3d.camera.pos.set(120, 120, 40);
+    s3d.camera.target.set(config.worldSize * .56, config.worldSize * .56, 0);
+    s3d.camera.pos.set(config.worldSize * .93, config.worldSize * .93, 40);
   
     s3d.camera.zNear = 1;
     s3d.camera.zFar = 100;
@@ -86,7 +86,6 @@ class Main extends hxd.App {
     } else {
       trace("Rodando versão completa");
     }
-    trace(config);
 
     #if js
     trace("Rodando na Web");

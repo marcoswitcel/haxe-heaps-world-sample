@@ -25,7 +25,7 @@ class AppConfig {
     public static inline function factory() {
         var window = hxd.Window.getInstance();
         if (window.width < FULL_DEMO_MIN_WIDTH) {
-            return new AppConfig(600, 3000, 32, 64, true);
+            return new AppConfig(300, 1500, 32, 64, true);
         }
         
         return new AppConfig(1000, 10000, 64, 128, false);
