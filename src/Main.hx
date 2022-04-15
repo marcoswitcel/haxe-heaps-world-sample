@@ -13,26 +13,22 @@ class Main extends hxd.App {
 
   private var world:World;
   private var shadow:DefaultShadowMap;
-  private var numObjects:Int;
-  private var numParticles:Int;
-  
+  private var config:AppConfig;
 
-
-  public function new(numObjects:Int = 1000, numParticles:Int = 10000) {
+  public function new(config:AppConfig) {
     super();
-    this.numObjects = numObjects;
-    this.numParticles = numParticles;
+    this.config = config;
   }
 
   override function init() {
-    world = new World(64, 128, s3d);
+    world = new World(config.chunkSize, config.worldSize, s3d);
     var t = world.loadModel(hxd.Res.tree);
     var r = world.loadModel(hxd.Res.rock);
 
-    for (i in 0...numObjects) {
+    for (i in 0...config.numObjects) {
       var model:WorldModel = Std.random(2) == 0 ? t : r;
-      var x = Math.random() * 128;
-      var y = Math.random() * 128;
+      var x = Math.random() * config.worldSize;
+      var y = Math.random() * config.worldSize;
       world.add(model, x, y, 0, 1.2 + hxd.Math.srand(0.4), hxd.Math.srand(Math.PI));
     }
 
@@ -60,7 +56,7 @@ class Main extends hxd.App {
     g.size = 0.2;
     g.gravity = 1;
     g.life = 10;
-    g.nparts = numParticles;
+    g.nparts = config.numParticles;
     g.emitMode = CameraBounds;
     parts.volumeBounds = Bounds.fromValues(-20, -20, 15, 40, 40, 40);
   }
@@ -81,14 +77,17 @@ class Main extends hxd.App {
 
   static function main() {
     hxd.Res.initEmbed();
-    var window = hxd.Window.getInstance();
-    if (window.width < 900) {
+    
+    var config = AppConfig.factory();
+    new Main(config);
+
+    if (config.isLightDemo()) {
       trace("Rodando versão leve");
-      new Main(600, 3000);
     } else {
       trace("Rodando versão completa");
-      new Main();
     }
+    trace(config);
+
     #if js
     trace("Rodando na Web");
     #end
