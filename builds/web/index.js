@@ -19,7 +19,7 @@ AppConfig.__name__ = "AppConfig";
 AppConfig.factory = function() {
 	var $window = hxd_Window.getInstance();
 	if($window.get_width() < 900) {
-		return new AppConfig(300,1500,32,64,true);
+		return new AppConfig(75,750,16,32,true);
 	}
 	return new AppConfig(1000,10000,64,128,false);
 };
@@ -315,14 +315,14 @@ Main.__name__ = "Main";
 Main.main = function() {
 	hxd_Res.set_loader(new hxd_res_Loader(new hxd_fs_EmbedFileSystem(haxe_Unserializer.run("oy8:rock.hmdty15:treeTexture.pngty8:tree.hmdty15:rockTexture.jpgtg"))));
 	var $window = hxd_Window.getInstance();
-	var config = $window.get_width() < 900 ? new AppConfig(300,1500,32,64,true) : new AppConfig(1000,10000,64,128,false);
+	var config = $window.get_width() < 900 ? new AppConfig(75,750,16,32,true) : new AppConfig(1000,10000,64,128,false);
 	new Main(config);
 	if(config.isLightDemo()) {
-		haxe_Log.trace("Rodando versão leve",{ fileName : "src/Main.hx", lineNumber : 85, className : "Main", methodName : "main"});
+		haxe_Log.trace("Rodando versão leve",{ fileName : "src/Main.hx", lineNumber : 87, className : "Main", methodName : "main"});
 	} else {
-		haxe_Log.trace("Rodando versão completa",{ fileName : "src/Main.hx", lineNumber : 87, className : "Main", methodName : "main"});
+		haxe_Log.trace("Rodando versão completa",{ fileName : "src/Main.hx", lineNumber : 89, className : "Main", methodName : "main"});
 	}
-	haxe_Log.trace("Rodando na Web",{ fileName : "src/Main.hx", lineNumber : 91, className : "Main", methodName : "main"});
+	haxe_Log.trace("Rodando na Web",{ fileName : "src/Main.hx", lineNumber : 93, className : "Main", methodName : "main"});
 };
 Main.__super__ = hxd_App;
 Main.prototype = $extend(hxd_App.prototype,{
@@ -344,7 +344,9 @@ Main.prototype = $extend(hxd_App.prototype,{
 		}
 		this.world.done();
 		this.lightSetup();
-		this.shadowsSetup();
+		if(!this.config.isLightDemo()) {
+			this.shadowsSetup();
+		}
 		this.particlesSetup();
 		this.cameraSetup();
 	}
@@ -4751,17 +4753,17 @@ h2d_Object.prototype = {
 			view.yMax = y15;
 		}
 		var a = bounds.xMin;
-		var b1 = view.xMin;
-		bounds.xMin = a < b1 ? b1 : a;
+		var b = view.xMin;
+		bounds.xMin = a < b ? b : a;
 		var a1 = bounds.yMin;
-		var b2 = view.yMin;
-		bounds.yMin = a1 < b2 ? b2 : a1;
+		var b1 = view.yMin;
+		bounds.yMin = a1 < b1 ? b1 : a1;
 		var a2 = bounds.xMax;
-		var b3 = view.xMax;
-		bounds.xMax = a2 > b3 ? b3 : a2;
+		var b2 = view.xMax;
+		bounds.xMax = a2 > b2 ? b2 : a2;
 		var a3 = bounds.yMax;
-		var b4 = view.yMax;
-		bounds.yMax = a3 > b4 ? b4 : a3;
+		var b3 = view.yMax;
+		bounds.yMax = a3 > b3 ? b3 : a3;
 	}
 	,drawFilters: function(ctx) {
 		if(!ctx.pushFilter(this)) {
@@ -16690,8 +16692,8 @@ var h3d_anim_Skin = function(name,vertexCount,bonesPerVertex) {
 	if(vertexCount > 0) {
 		var this1 = new Array(vertexCount * bonesPerVertex);
 		this.vertexJoints = this1;
-		var this11 = new Array(vertexCount * bonesPerVertex);
-		this.vertexWeights = this11;
+		var this2 = new Array(vertexCount * bonesPerVertex);
+		this.vertexWeights = this2;
 		this.envelop = [];
 	}
 };
@@ -23218,11 +23220,11 @@ h3d_impl_GlDriver.prototype = $extend(h3d_impl_Driver.prototype,{
 		var dataLen = pixels.dataSize;
 		var buffer;
 		switch(t.format._hx_index) {
-		case 3:case 6:case 9:case 12:
-			buffer = new Uint16Array(pixels.bytes.b.buffer,pixels.offset,dataLen >> 1);
-			break;
 		case 4:case 7:case 10:case 13:
 			buffer = new Float32Array(pixels.bytes.b.buffer,pixels.offset,dataLen >> 2);
+			break;
+		case 3:case 6:case 9:case 12:
+			buffer = new Uint16Array(pixels.bytes.b.buffer,pixels.offset,dataLen >> 1);
 			break;
 		case 16:case 17:
 			buffer = new Uint32Array(pixels.bytes.b.buffer,pixels.offset,dataLen >> 2);
@@ -23761,11 +23763,11 @@ h3d_impl_GlDriver.prototype = $extend(h3d_impl_Driver.prototype,{
 		}
 		var buffer = pixels.bytes.b;
 		switch(this.curTarget.format._hx_index) {
-		case 3:case 6:case 9:case 12:
-			buffer = new Uint16Array(buffer.buffer);
-			break;
 		case 4:case 7:case 10:case 13:
 			buffer = new Float32Array(buffer.buffer);
+			break;
+		case 3:case 6:case 9:case 12:
+			buffer = new Uint16Array(buffer.buffer);
 			break;
 		case 16:case 17:
 			buffer = new Uint32Array(buffer.buffer);
@@ -24016,8 +24018,8 @@ h3d_impl_MemoryManager.prototype = {
 			indices.push(i);
 		}
 		this.triIndexes = h3d_Indexes.alloc(indices);
-		var this11 = new Array(0);
-		var indices1 = this11;
+		var this2 = new Array(0);
+		var indices1 = this2;
 		var p = 0;
 		var _g1 = 0;
 		var _g2 = 16383;
@@ -25440,9 +25442,9 @@ h3d_mat_MaterialDatabase.prototype = {
 				throw e;
 			}
 		}
-		var this11 = this.db;
+		var this2 = this.db;
 		var key1 = model.entry.get_directory();
-		var _this1 = this11;
+		var _this1 = this2;
 		var value1 = { v : value};
 		if(__map_reserved[key1] != null) {
 			_this1.setReserved(key1,value1);
@@ -29853,21 +29855,21 @@ h3d_parts_GpuParticles.prototype = $extend(h3d_scene_MultiMaterial.prototype,{
 				var this1 = hxd__$FloatBuffer_Float32Expand_$Impl_$._new(0);
 				tmp[gid1] = this1;
 			}
-			var this11 = this.primitiveBuffers[gid1];
-			var _g6 = this11.pos;
+			var this2 = this.primitiveBuffers[gid1];
+			var _g6 = this2.pos;
 			var _g11 = 14 * this.groups[gid1].nparts * 4;
 			while(_g6 < _g11) {
 				var i = _g6++;
-				if(this11.pos == this11.array.length) {
-					var newSize = this11.array.length << 1;
+				if(this2.pos == this2.array.length) {
+					var newSize = this2.array.length << 1;
 					if(newSize < 128) {
 						newSize = 128;
 					}
 					var newArray = new Float32Array(newSize);
-					newArray.set(this11.array);
-					this11.array = newArray;
+					newArray.set(this2.array);
+					this2.array = newArray;
 				}
-				this11.array[this11.pos++] = 0.;
+				this2.array[this2.pos++] = 0.;
 			}
 			this.primitives[gid1] = new h3d_prim_RawPrimitive({ vbuf : this.primitiveBuffers[gid1], stride : 14, quads : true, bounds : this.bounds},true);
 			this.primitives[gid1].buffer.flags |= 1 << h3d_BufferFlag.RawFormat._hx_index;
@@ -34230,47 +34232,47 @@ h3d_prim_BigPrimitive.prototype = $extend(h3d_prim_Primitive.prototype,{
 				h3d_prim_BigPrimitive.PREV_BUFFER = null;
 			}
 			if(this.isStatic) {
-				var this11 = this.tmpBuf;
-				var _g = this11.pos;
+				var this2 = this.tmpBuf;
+				var _g = this2.pos;
 				var _g1 = 65535 * this.stride;
 				while(_g < _g1) {
 					var i = _g++;
-					if(this11.pos == this11.array.length) {
-						var newSize = this11.array.length << 1;
+					if(this2.pos == this2.array.length) {
+						var newSize = this2.array.length << 1;
 						if(newSize < 128) {
 							newSize = 128;
 						}
 						var newArray = new Float32Array(newSize);
-						newArray.set(this11.array);
-						this11.array = newArray;
+						newArray.set(this2.array);
+						this2.array = newArray;
 					}
-					this11.array[this11.pos++] = 0.;
+					this2.array[this2.pos++] = 0.;
 				}
 			}
 		}
 		if(!this.isStatic) {
-			var this12 = this.tmpBuf;
-			var _g2 = this12.pos;
+			var this3 = this.tmpBuf;
+			var _g2 = this3.pos;
 			var _g11 = vcount * this.stride + this.bufPos;
 			while(_g2 < _g11) {
 				var i1 = _g2++;
-				if(this12.pos == this12.array.length) {
-					var newSize1 = this12.array.length << 1;
+				if(this3.pos == this3.array.length) {
+					var newSize1 = this3.array.length << 1;
 					if(newSize1 < 128) {
 						newSize1 = 128;
 					}
 					var newArray1 = new Float32Array(newSize1);
-					newArray1.set(this12.array);
-					this12.array = newArray1;
+					newArray1.set(this3.array);
+					this3.array = newArray1;
 				}
-				this12.array[this12.pos++] = 0.;
+				this3.array[this3.pos++] = 0.;
 			}
 		}
 		if(this.tmpIdx == null) {
 			this.tmpIdx = h3d_prim_BigPrimitive.PREV_INDEX;
 			if(this.tmpIdx == null) {
-				var this13 = new Array(0);
-				this.tmpIdx = this13;
+				var this4 = new Array(0);
+				this.tmpIdx = this4;
 			} else {
 				h3d_prim_BigPrimitive.PREV_INDEX = null;
 			}
@@ -34279,8 +34281,8 @@ h3d_prim_BigPrimitive.prototype = $extend(h3d_prim_Primitive.prototype,{
 			var size = this.tmpIdx.length == 0 ? 1024 : this.tmpIdx.length;
 			var req = this.idxPos + icount;
 			while(size < req) size <<= 1;
-			var this14 = this.tmpIdx;
-			while(this14.length < size) this14.push(0);
+			var this5 = this.tmpIdx;
+			while(this5.length < size) this5.push(0);
 		}
 	}
 	,addPoint: function(x,y,z) {
@@ -35448,8 +35450,8 @@ h3d_prim_Polygon.prototype = $extend(h3d_prim_MeshPrimitive.prototype,{
 	,getCollider: function() {
 		var this1 = new Array(this.points.length * 3);
 		var vertexes = this1;
-		var this11 = new Array(this.idx.length);
-		var indexes = this11;
+		var this2 = new Array(this.idx.length);
+		var indexes = this2;
 		var vid = 0;
 		var _g = 0;
 		var _g1 = this.points;
@@ -35771,8 +35773,8 @@ h3d_prim_HMDModel.prototype = $extend(h3d_prim_MeshPrimitive.prototype,{
 		}
 		var pol = new h3d_prim_Polygon(pts,idx);
 		pol.addNormals();
-		var this11 = hxd__$FloatBuffer_Float32Expand_$Impl_$._new(0);
-		var v = this11;
+		var this2 = hxd__$FloatBuffer_Float32Expand_$Impl_$._new(0);
+		var v = this2;
 		var _g4 = v.pos;
 		var _g12 = this.data.vertexCount * 3;
 		while(_g4 < _g12) {
@@ -36440,11 +36442,11 @@ h3d_scene_CameraController.prototype = $extend(h3d_scene_Object.prototype,{
 				if(e.kind == hxd_EventKind.ERelease && Date.now() / 1000 - this.pushTime < 0.2) {
 					var dx = e.relX - this.pushStartX;
 					var dy = e.relY - this.pushStartY;
-					var dz1 = 0.;
-					if(dz1 == null) {
-						dz1 = 0.;
+					var dz = 0.;
+					if(dz == null) {
+						dz = 0.;
 					}
-					tmp = Math.sqrt(dx * dx + dy * dy + dz1 * dz1) < 5;
+					tmp = Math.sqrt(dx * dx + dy * dy + dz * dz) < 5;
 				} else {
 					tmp = false;
 				}
@@ -36611,12 +36613,12 @@ h3d_scene_CameraController.prototype = $extend(h3d_scene_Object.prototype,{
 		var v21 = this.targetPos;
 		var a4 = v11.x;
 		_this1.x = a4 + dt * (v21.x - a4);
-		var a11 = v11.y;
-		_this1.y = a11 + dt * (v21.y - a11);
-		var a21 = v11.z;
-		_this1.z = a21 + dt * (v21.z - a21);
-		var a31 = v11.w;
-		_this1.w = a31 + dt * (v21.w - a31);
+		var a5 = v11.y;
+		_this1.y = a5 + dt * (v21.y - a5);
+		var a6 = v11.z;
+		_this1.z = a6 + dt * (v21.z - a6);
+		var a7 = v11.w;
+		_this1.w = a7 + dt * (v21.w - a7);
 		this.syncCamera();
 		h3d_scene_Object.prototype.sync.call(this,ctx);
 	}
@@ -38192,12 +38194,12 @@ h3d_scene_Scene.prototype = $extend(h3d_scene_Object.prototype,{
 						var l_y1 = y6;
 						var l_z1 = z6;
 						var l_w1 = 1.;
-						var px11 = l_x1 * m._11 + l_y1 * m._21 + l_z1 * m._31;
-						var py11 = l_x1 * m._12 + l_y1 * m._22 + l_z1 * m._32;
-						var pz11 = l_x1 * m._13 + l_y1 * m._23 + l_z1 * m._33;
-						l_x1 = px11;
-						l_y1 = py11;
-						l_z1 = pz11;
+						var px3 = l_x1 * m._11 + l_y1 * m._21 + l_z1 * m._31;
+						var py3 = l_x1 * m._12 + l_y1 * m._22 + l_z1 * m._32;
+						var pz3 = l_x1 * m._13 + l_y1 * m._23 + l_z1 * m._33;
+						l_x1 = px3;
+						l_y1 = py3;
+						l_z1 = pz3;
 						r1.lx = l_x1;
 						r1.ly = l_y1;
 						r1.lz = l_z1;
@@ -38255,20 +38257,20 @@ h3d_scene_Scene.prototype = $extend(h3d_scene_Object.prototype,{
 					var p_w2 = w;
 					p_w2 = 1;
 					var m1 = i1.absPos;
-					var px3 = p_x2 * m1._11 + p_y2 * m1._21 + p_z2 * m1._31 + p_w2 * m1._41;
-					var py3 = p_x2 * m1._12 + p_y2 * m1._22 + p_z2 * m1._32 + p_w2 * m1._42;
-					var pz3 = p_x2 * m1._13 + p_y2 * m1._23 + p_z2 * m1._33 + p_w2 * m1._43;
-					p_x2 = px3;
-					p_y2 = py3;
-					p_z2 = pz3;
+					var px4 = p_x2 * m1._11 + p_y2 * m1._21 + p_z2 * m1._31 + p_w2 * m1._41;
+					var py4 = p_x2 * m1._12 + p_y2 * m1._22 + p_z2 * m1._32 + p_w2 * m1._42;
+					var pz4 = p_x2 * m1._13 + p_y2 * m1._23 + p_z2 * m1._33 + p_w2 * m1._43;
+					p_x2 = px4;
+					p_y2 = py4;
+					p_z2 = pz4;
 					var m2 = this.camera.m;
-					var px4 = p_x2 * m2._11 + p_y2 * m2._21 + p_z2 * m2._31 + p_w2 * m2._41;
-					var py4 = p_x2 * m2._12 + p_y2 * m2._22 + p_z2 * m2._32 + p_w2 * m2._42;
-					var pz4 = p_x2 * m2._13 + p_y2 * m2._23 + p_z2 * m2._33 + p_w2 * m2._43;
+					var px5 = p_x2 * m2._11 + p_y2 * m2._21 + p_z2 * m2._31 + p_w2 * m2._41;
+					var py5 = p_x2 * m2._12 + p_y2 * m2._22 + p_z2 * m2._32 + p_w2 * m2._42;
+					var pz5 = p_x2 * m2._13 + p_y2 * m2._23 + p_z2 * m2._33 + p_w2 * m2._43;
 					var iw = 1 / (p_x2 * m2._14 + p_y2 * m2._24 + p_z2 * m2._34 + p_w2 * m2._44);
-					p_x2 = px4 * iw;
-					p_y2 = py4 * iw;
-					p_z2 = pz4 * iw;
+					p_x2 = px5 * iw;
+					p_y2 = py5 * iw;
+					p_z2 = pz5 * iw;
 					p_w2 = 1;
 					i1.hitPoint.w = p_z2 + wfactor;
 				}
@@ -39340,8 +39342,8 @@ var h3d_scene_WorldModel = function(r) {
 	this.r = r;
 	var this1 = hxd__$FloatBuffer_Float32Expand_$Impl_$._new(0);
 	this.buf = this1;
-	var this11 = new Array(0);
-	this.idx = this11;
+	var this2 = new Array(0);
+	this.idx = this2;
 	this.geometries = [];
 	this.bounds = new h3d_col_Bounds();
 };
@@ -39366,8 +39368,8 @@ h3d_scene_WorldModel.prototype = {
 			if(length == null) {
 				length = 0;
 			}
-			var this11 = new Array(length);
-			var indexRemap = this11;
+			var this2 = new Array(length);
+			var indexRemap = this2;
 			var vidx = 0;
 			var iidx = 0;
 			var _g = 0;
@@ -39452,8 +39454,8 @@ h3d_scene_WorldModel.prototype = {
 			if(length1 == null) {
 				length1 = 0;
 			}
-			var this12 = hxd__$FloatBuffer_Float32Expand_$Impl_$._new(length1);
-			var bufRemap = this12;
+			var this3 = hxd__$FloatBuffer_Float32Expand_$Impl_$._new(length1);
+			var bufRemap = this3;
 			var _g41 = 0;
 			var _g51 = vertexCount;
 			while(_g41 < _g51) {
@@ -39843,28 +39845,28 @@ h3d_scene_World.prototype = $extend(h3d_scene_Object.prototype,{
 						this1.array = newArray;
 					}
 					this1.array[this1.pos++] = pt_x;
-					var this11 = model.buf;
-					if(this11.pos == this11.array.length) {
-						var newSize1 = this11.array.length << 1;
+					var this2 = model.buf;
+					if(this2.pos == this2.array.length) {
+						var newSize1 = this2.array.length << 1;
 						if(newSize1 < 128) {
 							newSize1 = 128;
 						}
 						var newArray1 = new Float32Array(newSize1);
-						newArray1.set(this11.array);
-						this11.array = newArray1;
+						newArray1.set(this2.array);
+						this2.array = newArray1;
 					}
-					this11.array[this11.pos++] = pt_y;
-					var this12 = model.buf;
-					if(this12.pos == this12.array.length) {
-						var newSize2 = this12.array.length << 1;
+					this2.array[this2.pos++] = pt_y;
+					var this3 = model.buf;
+					if(this3.pos == this3.array.length) {
+						var newSize2 = this3.array.length << 1;
 						if(newSize2 < 128) {
 							newSize2 = 128;
 						}
 						var newArray2 = new Float32Array(newSize2);
-						newArray2.set(this12.array);
-						this12.array = newArray2;
+						newArray2.set(this3.array);
+						this3.array = newArray2;
 					}
-					this12.array[this12.pos++] = pt_z;
+					this3.array[this3.pos++] = pt_z;
 					var _this = model.bounds;
 					var x2 = pt_x;
 					var y2 = pt_y;
@@ -39910,39 +39912,39 @@ h3d_scene_World.prototype = $extend(h3d_scene_Object.prototype,{
 					n_y = py1;
 					n_z = pz1;
 					var len = 1. / Math.sqrt(n_x * n_x + n_y * n_y + n_z * n_z);
-					var this13 = model.buf;
-					if(this13.pos == this13.array.length) {
-						var newSize3 = this13.array.length << 1;
+					var this4 = model.buf;
+					if(this4.pos == this4.array.length) {
+						var newSize3 = this4.array.length << 1;
 						if(newSize3 < 128) {
 							newSize3 = 128;
 						}
 						var newArray3 = new Float32Array(newSize3);
-						newArray3.set(this13.array);
-						this13.array = newArray3;
+						newArray3.set(this4.array);
+						this4.array = newArray3;
 					}
-					this13.array[this13.pos++] = n_x * len;
-					var this14 = model.buf;
-					if(this14.pos == this14.array.length) {
-						var newSize4 = this14.array.length << 1;
+					this4.array[this4.pos++] = n_x * len;
+					var this5 = model.buf;
+					if(this5.pos == this5.array.length) {
+						var newSize4 = this5.array.length << 1;
 						if(newSize4 < 128) {
 							newSize4 = 128;
 						}
 						var newArray4 = new Float32Array(newSize4);
-						newArray4.set(this14.array);
-						this14.array = newArray4;
+						newArray4.set(this5.array);
+						this5.array = newArray4;
 					}
-					this14.array[this14.pos++] = n_y * len;
-					var this15 = model.buf;
-					if(this15.pos == this15.array.length) {
-						var newSize5 = this15.array.length << 1;
+					this5.array[this5.pos++] = n_y * len;
+					var this6 = model.buf;
+					if(this6.pos == this6.array.length) {
+						var newSize5 = this6.array.length << 1;
 						if(newSize5 < 128) {
 							newSize5 = 128;
 						}
 						var newArray5 = new Float32Array(newSize5);
-						newArray5.set(this15.array);
-						this15.array = newArray5;
+						newArray5.set(this6.array);
+						this6.array = newArray5;
 					}
-					this15.array[this15.pos++] = n_z * len;
+					this6.array[this6.pos++] = n_z * len;
 					if(this.enableNormalMaps) {
 						var x4 = tx;
 						var y4 = ty;
@@ -39968,80 +39970,80 @@ h3d_scene_World.prototype = $extend(h3d_scene_Object.prototype,{
 						t_y = py2;
 						t_z = pz2;
 						var len1 = tlen * (1. / Math.sqrt(n_x * n_x + n_y * n_y + n_z * n_z));
-						var this16 = model.buf;
-						if(this16.pos == this16.array.length) {
-							var newSize6 = this16.array.length << 1;
+						var this7 = model.buf;
+						if(this7.pos == this7.array.length) {
+							var newSize6 = this7.array.length << 1;
 							if(newSize6 < 128) {
 								newSize6 = 128;
 							}
 							var newArray6 = new Float32Array(newSize6);
-							newArray6.set(this16.array);
-							this16.array = newArray6;
+							newArray6.set(this7.array);
+							this7.array = newArray6;
 						}
-						this16.array[this16.pos++] = t_x * len1;
-						var this17 = model.buf;
-						if(this17.pos == this17.array.length) {
-							var newSize7 = this17.array.length << 1;
+						this7.array[this7.pos++] = t_x * len1;
+						var this8 = model.buf;
+						if(this8.pos == this8.array.length) {
+							var newSize7 = this8.array.length << 1;
 							if(newSize7 < 128) {
 								newSize7 = 128;
 							}
 							var newArray7 = new Float32Array(newSize7);
-							newArray7.set(this17.array);
-							this17.array = newArray7;
+							newArray7.set(this8.array);
+							this8.array = newArray7;
 						}
-						this17.array[this17.pos++] = t_y * len1;
-						var this18 = model.buf;
-						if(this18.pos == this18.array.length) {
-							var newSize8 = this18.array.length << 1;
+						this8.array[this8.pos++] = t_y * len1;
+						var this9 = model.buf;
+						if(this9.pos == this9.array.length) {
+							var newSize8 = this9.array.length << 1;
 							if(newSize8 < 128) {
 								newSize8 = 128;
 							}
 							var newArray8 = new Float32Array(newSize8);
-							newArray8.set(this18.array);
-							this18.array = newArray8;
+							newArray8.set(this9.array);
+							this9.array = newArray8;
 						}
-						this18.array[this18.pos++] = t_z * len1;
+						this9.array[this9.pos++] = t_z * len1;
 					}
-					var this19 = model.buf;
+					var this10 = model.buf;
 					var v1 = u * wmat.t.su + wmat.t.du;
-					if(this19.pos == this19.array.length) {
-						var newSize9 = this19.array.length << 1;
+					if(this10.pos == this10.array.length) {
+						var newSize9 = this10.array.length << 1;
 						if(newSize9 < 128) {
 							newSize9 = 128;
 						}
 						var newArray9 = new Float32Array(newSize9);
-						newArray9.set(this19.array);
-						this19.array = newArray9;
+						newArray9.set(this10.array);
+						this10.array = newArray9;
 					}
-					this19.array[this19.pos++] = v1;
-					var this110 = model.buf;
+					this10.array[this10.pos++] = v1;
+					var this11 = model.buf;
 					var v2 = v * wmat.t.sv + wmat.t.dv;
-					if(this110.pos == this110.array.length) {
-						var newSize10 = this110.array.length << 1;
+					if(this11.pos == this11.array.length) {
+						var newSize10 = this11.array.length << 1;
 						if(newSize10 < 128) {
 							newSize10 = 128;
 						}
 						var newArray10 = new Float32Array(newSize10);
-						newArray10.set(this110.array);
-						this110.array = newArray10;
+						newArray10.set(this11.array);
+						this11.array = newArray10;
 					}
-					this110.array[this110.pos++] = v2;
+					this11.array[this11.pos++] = v2;
 					var _g23 = 0;
 					var _g32 = extra;
 					while(_g23 < _g32) {
 						var k = _g23++;
-						var this111 = model.buf;
+						var this12 = model.buf;
 						var v3 = vl[p++];
-						if(this111.pos == this111.array.length) {
-							var newSize11 = this111.array.length << 1;
+						if(this12.pos == this12.array.length) {
+							var newSize11 = this12.array.length << 1;
 							if(newSize11 < 128) {
 								newSize11 = 128;
 							}
 							var newArray11 = new Float32Array(newSize11);
-							newArray11.set(this111.array);
-							this111.array = newArray11;
+							newArray11.set(this12.array);
+							this12.array = newArray11;
 						}
-						this111.array[this111.pos++] = v3;
+						this12.array[this12.pos++] = v3;
 					}
 				}
 				var _g4 = 0;
@@ -41507,8 +41509,8 @@ var h3d_shader_ShaderBuffers = function(s) {
 	this.tex = this1;
 	var tmp;
 	if(s.bufferCount > 0) {
-		var this11 = new Array(s.bufferCount);
-		tmp = this11;
+		var this2 = new Array(s.bufferCount);
+		tmp = this2;
 	} else {
 		tmp = null;
 	}
@@ -41537,8 +41539,8 @@ h3d_shader_ShaderBuffers.prototype = {
 			this.tex = this1;
 		}
 		if(nb > 0 && (this.buffers == null || this.buffers.length < nb)) {
-			var this11 = new Array(nb);
-			this.buffers = this11;
+			var this2 = new Array(nb);
+			this.buffers = this2;
 		}
 	}
 	,__class__: h3d_shader_ShaderBuffers
@@ -46956,11 +46958,11 @@ var hxd_Pixels = function(width,height,bytes,format,offset) {
 	this.bytes = bytes;
 	this.set_innerFormat(format);
 	this.offset = offset;
-	var i1 = 0;
-	if(i1 == null) {
-		i1 = 0;
+	var i = 0;
+	if(i == null) {
+		i = 0;
 	}
-	var this1 = i1;
+	var this1 = i;
 	this.flags = this1;
 };
 $hxClasses["hxd.Pixels"] = hxd_Pixels;
@@ -46991,6 +46993,9 @@ hxd_Pixels.calcStride = function(width,format) {
 	case 5:
 		tmp = 1;
 		break;
+	case 6:case 18:
+		tmp = 2;
+		break;
 	case 7:
 		tmp = 4;
 		break;
@@ -47018,9 +47023,6 @@ hxd_Pixels.calcStride = function(width,format) {
 	case 17:
 		tmp = 4;
 		break;
-	case 6:case 18:
-		tmp = 2;
-		break;
 	case 12:case 19:
 		tmp = 6;
 		break;
@@ -47036,9 +47038,9 @@ hxd_Pixels.calcStride = function(width,format) {
 };
 hxd_Pixels.isFloatFormat = function(format) {
 	switch(format._hx_index) {
-	case 3:case 6:case 9:case 12:
-		return true;
 	case 4:case 7:case 10:case 13:
+		return true;
+	case 3:case 6:case 9:case 12:
 		return true;
 	case 21:
 		if(format.v == 6) {
@@ -47061,13 +47063,6 @@ hxd_Pixels.getChannelOffset = function(format,channel) {
 		return channel * 2;
 	case 4:
 		return channel * 4;
-	case 8:case 9:case 10:
-		var p = hxd_Pixels.calcStride(1,format);
-		return [0,p,-1,-1][channel];
-	case 2:case 14:case 15:
-		return channel;
-	case 16:case 17:
-		throw new js__$Boot_HaxeError("Bit packed format");
 	case 5:case 6:case 7:case 18:
 		if(channel == 0) {
 			return 0;
@@ -47075,6 +47070,13 @@ hxd_Pixels.getChannelOffset = function(format,channel) {
 			return -1;
 		}
 		break;
+	case 8:case 9:case 10:
+		var p = hxd_Pixels.calcStride(1,format);
+		return [0,p,-1,-1][channel];
+	case 2:case 14:case 15:
+		return channel;
+	case 16:case 17:
+		throw new js__$Boot_HaxeError("Bit packed format");
 	case 11:case 12:case 13:case 19:
 		var p1 = hxd_Pixels.calcStride(1,format);
 		return [0,p1,p1 << 1,-1][channel];
@@ -47669,8 +47671,8 @@ hxd_Pixels.prototype = {
 				break;
 			case 5:
 				var nbytes = new haxe_io_Bytes(new ArrayBuffer(this.width * this.height));
-				var this11 = nbytes.b;
-				var out = this11;
+				var this2 = nbytes.b;
+				var out = this2;
 				var _g7 = 0;
 				var _g17 = this.width * this.height;
 				while(_g7 < _g17) {
@@ -47687,8 +47689,8 @@ hxd_Pixels.prototype = {
 		case 4:
 			if(target._hx_index == 7) {
 				var nbytes1 = new haxe_io_Bytes(new ArrayBuffer(this.height * this.width * 4));
-				var this12 = nbytes1.b;
-				var out1 = this12;
+				var this3 = nbytes1.b;
+				var out1 = this3;
 				var _g8 = 0;
 				var _g18 = this.width * this.height;
 				while(_g8 < _g18) {
@@ -49406,9 +49408,11 @@ hxd_clipper__$Clipper_ClipperBase.getBounds = function(pols) {
 	var _g1 = count;
 	while(_g < _g1) {
 		var i1 = _g++;
-		var _g2 = new hxd_impl_ArrayIterator_$h2d_$col_$IPoint(pols[i1]);
-		while(_g2.i < _g2.l) {
-			var p = _g2.a[_g2.i++];
+		var _g_i = 0;
+		var _g_a = pols[i1];
+		var _g_l = _g_a.length;
+		while(_g_i < _g_l) {
+			var p = _g_a[_g_i++];
 			if(p.x < result.left) {
 				result.left = p.x;
 			} else if(p.x > result.right) {
@@ -49496,9 +49500,11 @@ hxd_clipper__$Clipper_ClipperBase.prototype = {
 	}
 	,addPolygons: function(ppg,polyType) {
 		var result = false;
-		var _g = new hxd_impl_ArrayIterator_$h2d_$col_$IPolygon(ppg);
-		while(_g.i < _g.l) {
-			var p = _g.a[_g.i++];
+		var _g_i = 0;
+		var _g_a = ppg;
+		var _g_l = _g_a.length;
+		while(_g_i < _g_l) {
+			var p = _g_a[_g_i++];
 			if(this.addPolygon(p,polyType)) {
 				result = true;
 			}
@@ -51868,9 +51874,11 @@ hxd_clipper_Clipper.prototype = $extend(hxd_clipper__$Clipper_ClipperBase.protot
 		}
 	}
 	,reversePolygons: function(polys) {
-		var _g = new hxd_impl_ArrayIterator_$h2d_$col_$IPolygon(polys);
-		while(_g.i < _g.l) {
-			var p = _g.a[_g.i++];
+		var _g_i = 0;
+		var _g_a = polys;
+		var _g_l = _g_a.length;
+		while(_g_i < _g_l) {
+			var p = _g_a[_g_i++];
 			h2d_col__$IPolygon_IPolygon_$Impl_$.reverse(p);
 		}
 	}
@@ -52752,9 +52760,11 @@ hxd_clipper_Clipper.prototype = $extend(hxd_clipper__$Clipper_ClipperBase.protot
 			var points = null;
 			var this2 = points == null ? [] : points;
 			var p = this2;
-			var _g2 = new hxd_impl_ArrayIterator_$h2d_$col_$IPoint(pattern);
-			while(_g2.i < _g2.l) {
-				var ip = _g2.a[_g2.i++];
+			var _g_i = 0;
+			var _g_a = pattern;
+			var _g_l = _g_a.length;
+			while(_g_i < _g_l) {
+				var ip = _g_a[_g_i++];
 				if(IsSum) {
 					p.push(new h2d_col_IPoint(path[i].x + ip.x,path[i].y + ip.y));
 				} else {
@@ -52766,14 +52776,14 @@ hxd_clipper_Clipper.prototype = $extend(hxd_clipper__$Clipper_ClipperBase.protot
 		var polygons1 = null;
 		var this3 = polygons1 == null ? [] : polygons1;
 		var quads = this3;
-		var _g21 = 0;
+		var _g2 = 0;
 		var _g3 = pathCnt;
-		while(_g21 < _g3) {
-			var i1 = _g21++;
-			var _g22 = 0;
+		while(_g2 < _g3) {
+			var i1 = _g2++;
+			var _g21 = 0;
 			var _g31 = polyCnt;
-			while(_g22 < _g31) {
-				var j = _g22++;
+			while(_g21 < _g31) {
+				var j = _g21++;
 				var points1 = null;
 				var this4 = points1 == null ? [] : points1;
 				var quad = this4;
@@ -52916,9 +52926,11 @@ hxd_clipper_ClipperOffset.prototype = {
 		}
 	}
 	,addPolygons: function(pols,joinType,endType) {
-		var _g = new hxd_impl_ArrayIterator_$h2d_$col_$IPolygon(pols);
-		while(_g.i < _g.l) {
-			var p = _g.a[_g.i++];
+		var _g_i = 0;
+		var _g_a = pols;
+		var _g_l = _g_a.length;
+		while(_g_i < _g_l) {
+			var p = _g_a[_g_i++];
 			this.addPolygon(p,joinType,endType);
 		}
 	}
@@ -54919,8 +54931,8 @@ hxd_fmt_hmd_Library.prototype = {
 		var models = modelIndex < 0 ? this.header.models : [this.header.models[modelIndex]];
 		var this1 = hxd__$FloatBuffer_Float32Expand_$Impl_$._new(0);
 		var outVertex = this1;
-		var this11 = new Array(0);
-		var outIndex = this11;
+		var this2 = new Array(0);
+		var outIndex = this2;
 		var stride = 0;
 		var mid = -1;
 		var _g = 0;
@@ -55092,8 +55104,8 @@ hxd_fmt_hmd_Library.prototype = {
 		if(material == null) {
 			var this1 = new Array(stride * geom.vertexCount);
 			buf.vertexes = this1;
-			var this11 = new Array(geom.get_indexCount());
-			buf.indexes = this11;
+			var this2 = new Array(geom.get_indexCount());
+			buf.indexes = this2;
 			var w = 0;
 			var _g22 = 0;
 			var _g31 = geom.vertexCount;
@@ -55151,12 +55163,12 @@ hxd_fmt_hmd_Library.prototype = {
 			}
 		} else {
 			var icount = geom.indexCounts[material];
-			var this12 = new Array(geom.vertexCount);
-			var vmap = this12;
-			var this13 = hxd__$FloatBuffer_Float32Expand_$Impl_$._new(0);
-			var vertexes = this13;
-			var this14 = new Array(icount);
-			buf.indexes = this14;
+			var this3 = new Array(geom.vertexCount);
+			var vmap = this3;
+			var this4 = hxd__$FloatBuffer_Float32Expand_$Impl_$._new(0);
+			var vertexes = this4;
+			var this5 = new Array(icount);
+			buf.indexes = this5;
 			var r2 = 0;
 			var vcount = 0;
 			var _g24 = 0;
@@ -55315,13 +55327,13 @@ hxd_fmt_hmd_Library.prototype = {
 				}
 				buf.indexes[i6] = rid - 1;
 			}
-			var this15 = vertexes;
+			var this6 = vertexes;
 			var _g6 = [];
 			var _g12 = 0;
-			var _g26 = this15.pos;
+			var _g26 = this6.pos;
 			while(_g12 < _g26) {
 				var i8 = _g12++;
-				_g6.push(this15.array[i8]);
+				_g6.push(this6.array[i8]);
 			}
 			buf.vertexes = _g6;
 		}
@@ -55734,8 +55746,8 @@ hxd_fmt_hmd_Library.prototype = {
 				l.addCurve(o.name,fl,true,rot,scale);
 			}
 			if((o.flags & 1 << hxd_fmt_hmd_AnimationFlag.HasUV._hx_index) != 0) {
-				var this11 = new Array(a.frames * 2);
-				var fl1 = this11;
+				var this2 = new Array(a.frames * 2);
+				var fl1 = this2;
 				var size1 = 8 * a.frames;
 				var data1 = new haxe_io_Bytes(new ArrayBuffer(size1));
 				entry.read(data1,0,size1);
@@ -55748,8 +55760,8 @@ hxd_fmt_hmd_Library.prototype = {
 				l.addUVCurve(o.name,fl1);
 			}
 			if((o.flags & 1 << hxd_fmt_hmd_AnimationFlag.HasAlpha._hx_index) != 0) {
-				var this12 = new Array(a.frames);
-				var fl2 = this12;
+				var this3 = new Array(a.frames);
+				var fl2 = this3;
 				var size2 = 4 * a.frames;
 				var data2 = new haxe_io_Bytes(new ArrayBuffer(size2));
 				entry.read(data2,0,size2);
@@ -55767,8 +55779,8 @@ hxd_fmt_hmd_Library.prototype = {
 				while(_g5 < _g14.length) {
 					var p1 = _g14[_g5];
 					++_g5;
-					var this13 = new Array(a.frames);
-					var fl3 = this13;
+					var this4 = new Array(a.frames);
+					var fl3 = this4;
 					var size3 = 4 * a.frames;
 					var data3 = new haxe_io_Bytes(new ArrayBuffer(size3));
 					entry.read(data3,0,size3);
@@ -55799,8 +55811,8 @@ hxd_fmt_hmd_Library.prototype = {
 		var data = this.getBuffers(geom,[new hxd_fmt_hmd_GeometryFormat("position",3),new hxd_fmt_hmd_GeometryFormat("weights",3),new hxd_fmt_hmd_GeometryFormat("indexes",9)]);
 		var this1 = new Array(skin.vertexCount * skin.bonesPerVertex);
 		skin.vertexWeights = this1;
-		var this11 = new Array(skin.vertexCount * skin.bonesPerVertex);
-		skin.vertexJoints = this11;
+		var this2 = new Array(skin.vertexCount * skin.bonesPerVertex);
+		skin.vertexJoints = this2;
 		var _g = 0;
 		var _g1 = skin.boundJoints;
 		while(_g < _g1.length) {
@@ -56341,19 +56353,19 @@ hxd_fmt_hmd_Reader.prototype = {
 				var k7 = _g61++;
 				var o = new hxd_fmt_hmd_AnimationObject();
 				o.name = this.readCachedName();
-				var i1 = this.i.readByte();
-				if(i1 == null) {
-					i1 = 0;
+				var i = this.i.readByte();
+				if(i == null) {
+					i = 0;
 				}
-				var this11 = i1;
-				o.flags = this11;
+				var this2 = i;
+				o.flags = this2;
 				a.objects.push(o);
 				if((o.flags & 1 << hxd_fmt_hmd_AnimationFlag.HasProps._hx_index) != 0) {
 					var _g62 = [];
 					var _g72 = 0;
 					var _g8 = this.i.readByte();
 					while(_g72 < _g8) {
-						var i = _g72++;
+						var i1 = _g72++;
 						_g62.push(this.readName());
 					}
 					o.props = _g62;
@@ -64943,13 +64955,13 @@ hxsl_Dce.prototype = {
 			var _g111 = _g.op;
 			switch(_g111._hx_index) {
 			case 4:
-				var _g27 = _g12.t;
-				var _g26 = _g12.p;
-				var _g25 = _g12.e;
-				switch(_g25._hx_index) {
+				var _g16 = _g12.t;
+				var _g15 = _g12.p;
+				var _g14 = _g12.e;
+				switch(_g14._hx_index) {
 				case 1:
 					var e1 = _g13;
-					var v1 = _g25.v;
+					var v1 = _g14.v;
 					var v2 = this.get(v1);
 					writeTo.push(v2);
 					this.check(e1,writeTo,isAffected);
@@ -64959,14 +64971,14 @@ hxsl_Dce.prototype = {
 					}
 					break;
 				case 9:
-					var _g30 = _g25.regs;
-					var _g29 = _g25.e;
-					var _g33 = _g29.t;
-					var _g32 = _g29.p;
-					var _g31 = _g29.e;
-					if(_g31._hx_index == 1) {
+					var _g19 = _g14.regs;
+					var _g18 = _g14.e;
+					var _g22 = _g18.t;
+					var _g21 = _g18.p;
+					var _g20 = _g18.e;
+					if(_g20._hx_index == 1) {
 						var e2 = _g13;
-						var v3 = _g31.v;
+						var v3 = _g20.v;
 						var v4 = this.get(v3);
 						writeTo.push(v4);
 						this.check(e2,writeTo,isAffected);
@@ -64993,14 +65005,14 @@ hxsl_Dce.prototype = {
 				}
 				break;
 			case 20:
-				var _g14 = _g111.op;
-				var _g17 = _g12.t;
-				var _g16 = _g12.p;
-				var _g15 = _g12.e;
-				switch(_g15._hx_index) {
+				var _g24 = _g111.op;
+				var _g27 = _g12.t;
+				var _g26 = _g12.p;
+				var _g25 = _g12.e;
+				switch(_g25._hx_index) {
 				case 1:
 					var e5 = _g13;
-					var v5 = _g15.v;
+					var v5 = _g25.v;
 					var v6 = this.get(v5);
 					writeTo.push(v6);
 					this.check(e5,writeTo,isAffected);
@@ -65010,14 +65022,14 @@ hxsl_Dce.prototype = {
 					}
 					break;
 				case 9:
-					var _g20 = _g15.regs;
-					var _g19 = _g15.e;
-					var _g23 = _g19.t;
-					var _g22 = _g19.p;
-					var _g21 = _g19.e;
-					if(_g21._hx_index == 1) {
+					var _g30 = _g25.regs;
+					var _g29 = _g25.e;
+					var _g33 = _g29.t;
+					var _g32 = _g29.p;
+					var _g31 = _g29.e;
+					if(_g31._hx_index == 1) {
 						var e6 = _g13;
-						var v7 = _g21.v;
+						var v7 = _g31.v;
 						var v8 = this.get(v7);
 						writeTo.push(v8);
 						this.check(e6,writeTo,isAffected);
@@ -65228,10 +65240,10 @@ hxsl_Dce.prototype = {
 				}
 			}
 			this.check(e21,affect,isAffected);
-			var _g18 = 0;
-			var _g24 = len;
-			while(_g18 < _g24) {
-				var i1 = _g18++;
+			var _g17 = 0;
+			var _g23 = len;
+			while(_g17 < _g23) {
+				var i1 = _g17++;
 				var v11 = affect[i1];
 				if(isAffected.indexOf(v11) < 0) {
 					isAffected.push(v11);
@@ -65300,12 +65312,12 @@ hxsl_Dce.prototype = {
 			var _g10 = _g.op;
 			switch(_g10._hx_index) {
 			case 4:
-				var _g26 = _g11.t;
-				var _g25 = _g11.p;
-				var _g24 = _g11.e;
-				switch(_g24._hx_index) {
+				var _g15 = _g11.t;
+				var _g14 = _g11.p;
+				var _g13 = _g11.e;
+				switch(_g13._hx_index) {
 				case 1:
-					var v = _g24.v;
+					var v = _g13.v;
 					if(!this.get(v).used) {
 						return { e : hxsl_TExprDef.TConst(hxsl_Const.CNull), t : e.t, p : e.p};
 					} else {
@@ -65315,13 +65327,13 @@ hxsl_Dce.prototype = {
 					}
 					break;
 				case 9:
-					var _g29 = _g24.regs;
-					var _g28 = _g24.e;
-					var _g32 = _g28.t;
-					var _g31 = _g28.p;
-					var _g30 = _g28.e;
-					if(_g30._hx_index == 1) {
-						var v1 = _g30.v;
+					var _g18 = _g13.regs;
+					var _g17 = _g13.e;
+					var _g21 = _g17.t;
+					var _g20 = _g17.p;
+					var _g19 = _g17.e;
+					if(_g19._hx_index == 1) {
+						var v1 = _g19.v;
 						if(!this.get(v1).used) {
 							return { e : hxsl_TExprDef.TConst(hxsl_Const.CNull), t : e.t, p : e.p};
 						} else {
@@ -65342,13 +65354,13 @@ hxsl_Dce.prototype = {
 				}
 				break;
 			case 20:
-				var _g13 = _g10.op;
-				var _g16 = _g11.t;
-				var _g15 = _g11.p;
-				var _g14 = _g11.e;
-				switch(_g14._hx_index) {
+				var _g23 = _g10.op;
+				var _g26 = _g11.t;
+				var _g25 = _g11.p;
+				var _g24 = _g11.e;
+				switch(_g24._hx_index) {
 				case 1:
-					var v2 = _g14.v;
+					var v2 = _g24.v;
 					if(!this.get(v2).used) {
 						return { e : hxsl_TExprDef.TConst(hxsl_Const.CNull), t : e.t, p : e.p};
 					} else {
@@ -65358,13 +65370,13 @@ hxsl_Dce.prototype = {
 					}
 					break;
 				case 9:
-					var _g19 = _g14.regs;
-					var _g18 = _g14.e;
-					var _g22 = _g18.t;
-					var _g21 = _g18.p;
-					var _g20 = _g18.e;
-					if(_g20._hx_index == 1) {
-						var v3 = _g20.v;
+					var _g29 = _g24.regs;
+					var _g28 = _g24.e;
+					var _g32 = _g28.t;
+					var _g31 = _g28.p;
+					var _g30 = _g28.e;
+					if(_g30._hx_index == 1) {
+						var v3 = _g30.v;
 						if(!this.get(v3).used) {
 							return { e : hxsl_TExprDef.TConst(hxsl_Const.CNull), t : e.t, p : e.p};
 						} else {
@@ -66368,6 +66380,9 @@ hxsl_Eval.prototype = {
 					d = hxsl_TExprDef.TBinop(op,e12,e22);
 				}
 				break;
+			case 4:case 21:
+				d = hxsl_TExprDef.TBinop(op,e12,e22);
+				break;
 			case 5:
 				var _g10 = e22.e;
 				var _g18 = e12.e;
@@ -67213,9 +67228,6 @@ hxsl_Eval.prototype = {
 				break;
 			case 20:
 				var _g57 = op.op;
-				d = hxsl_TExprDef.TBinop(op,e12,e22);
-				break;
-			case 4:case 21:
 				d = hxsl_TExprDef.TBinop(op,e12,e22);
 				break;
 			case 22:
@@ -69548,10 +69560,10 @@ hxsl_GlslOut.prototype = {
 				break;
 			case 5:
 				if(_g11._hx_index == 5) {
-					var _g24 = _g11.t;
+					var _g31 = _g11.t;
 					if(_g2._hx_index == 5) {
-						var _g26 = _g2.t;
-						var _g25 = _g2.size;
+						var _g5 = _g2.t;
+						var _g4 = _g2.size;
 						var n = _g11.size;
 						this.buf.b += Std.string("vec" + n + "(");
 						var v9;
@@ -69602,10 +69614,10 @@ hxsl_GlslOut.prototype = {
 				break;
 			case 6:
 				if(_g11._hx_index == 5) {
-					var _g31 = _g11.t;
+					var _g17 = _g11.t;
 					if(_g2._hx_index == 5) {
-						var _g5 = _g2.t;
-						var _g4 = _g2.size;
+						var _g19 = _g2.t;
+						var _g18 = _g2.size;
 						var n1 = _g11.size;
 						this.buf.b += Std.string("vec" + n1 + "(");
 						var v12;
@@ -69656,10 +69668,10 @@ hxsl_GlslOut.prototype = {
 				break;
 			case 7:
 				if(_g11._hx_index == 5) {
-					var _g28 = _g11.t;
+					var _g24 = _g11.t;
 					if(_g2._hx_index == 5) {
-						var _g30 = _g2.t;
-						var _g29 = _g2.size;
+						var _g26 = _g2.t;
+						var _g25 = _g2.size;
 						var n2 = _g11.size;
 						this.buf.b += Std.string("vec" + n2 + "(");
 						var v15;
@@ -69710,10 +69722,10 @@ hxsl_GlslOut.prototype = {
 				break;
 			case 8:
 				if(_g11._hx_index == 5) {
-					var _g18 = _g11.t;
+					var _g7 = _g11.t;
 					if(_g2._hx_index == 5) {
-						var _g20 = _g2.t;
-						var _g19 = _g2.size;
+						var _g9 = _g2.t;
+						var _g8 = _g2.size;
 						var n3 = _g11.size;
 						this.buf.b += Std.string("vec" + n3 + "(");
 						var v18;
@@ -69764,10 +69776,10 @@ hxsl_GlslOut.prototype = {
 				break;
 			case 9:
 				if(_g11._hx_index == 5) {
-					var _g14 = _g11.t;
+					var _g111 = _g11.t;
 					if(_g2._hx_index == 5) {
-						var _g16 = _g2.t;
-						var _g15 = _g2.size;
+						var _g13 = _g2.t;
+						var _g12 = _g2.size;
 						var n4 = _g11.size;
 						this.buf.b += Std.string("vec" + n4 + "(");
 						var v21;
@@ -69818,10 +69830,10 @@ hxsl_GlslOut.prototype = {
 				break;
 			case 10:
 				if(_g11._hx_index == 5) {
-					var _g10 = _g11.t;
+					var _g28 = _g11.t;
 					if(_g2._hx_index == 5) {
-						var _g12 = _g2.t;
-						var _g111 = _g2.size;
+						var _g30 = _g2.t;
+						var _g29 = _g2.size;
 						var n5 = _g11.size;
 						this.buf.b += Std.string("vec" + n5 + "(");
 						var v24;
@@ -69912,7 +69924,7 @@ hxsl_GlslOut.prototype = {
 									this.decl("vec3 m3x4mult( vec3 v, _mat3x4 m) { vec4 ve = vec4(v,1.0); return vec3(dot(m.a,ve),dot(m.b,ve),dot(m.c,ve)); }");
 									var tmp2;
 									if(op._hx_index == 20) {
-										var _g7 = op.op;
+										var _g10 = op.op;
 										tmp2 = true;
 									} else {
 										tmp2 = false;
@@ -69963,7 +69975,7 @@ hxsl_GlslOut.prototype = {
 					if(e.t != hxsl_Type.TInt) {
 						var tmp3;
 						if(op._hx_index == 20) {
-							var _g8 = op.op;
+							var _g14 = op.op;
 							tmp3 = true;
 						} else {
 							tmp3 = false;
@@ -70089,9 +70101,9 @@ hxsl_GlslOut.prototype = {
 					} else {
 						var v39 = _g34;
 						var args2 = _g35;
-						var _g9 = v39.e;
-						if(_g9._hx_index == 2) {
-							var g3 = _g9.g;
+						var _g15 = v39.e;
+						if(_g15._hx_index == 2) {
+							var g3 = _g15.g;
 							var v40 = this.getFunName(g3,args2,e.t);
 							this.buf.b += Std.string(v40);
 						} else {
@@ -70116,9 +70128,9 @@ hxsl_GlslOut.prototype = {
 				default:
 					var args3 = _g35;
 					var v41 = _g34;
-					var _g13 = v41.e;
-					if(_g13._hx_index == 2) {
-						var g4 = _g13.g;
+					var _g16 = v41.e;
+					if(_g16._hx_index == 2) {
+						var g4 = _g16.g;
 						var v42 = this.getFunName(g4,args3,e.t);
 						this.buf.b += Std.string(v42);
 					} else {
@@ -70142,9 +70154,9 @@ hxsl_GlslOut.prototype = {
 			} else {
 				var args4 = _g35;
 				var v43 = _g34;
-				var _g17 = v43.e;
-				if(_g17._hx_index == 2) {
-					var g5 = _g17.g;
+				var _g20 = v43.e;
+				if(_g20._hx_index == 2) {
+					var g5 = _g20.g;
 					var v44 = this.getFunName(g5,args4,e.t);
 					this.buf.b += Std.string(v44);
 				} else {
@@ -70834,8 +70846,8 @@ hxsl_Linker.prototype = {
 			case 4:
 				switch(_g1._hx_index) {
 				case 1:
-					var _g9 = _g1.v;
-					var v2 = _g9;
+					var _g11 = _g1.v;
+					var v2 = _g11;
 					if(!this.locals.h.hasOwnProperty(v2.id)) {
 						var e21 = this.mapExprVar(e2);
 						var v3 = this.allocVar(v2,e1.p);
@@ -70844,7 +70856,7 @@ hxsl_Linker.prototype = {
 						}
 						return { e : hxsl_TExprDef.TBinop(op,{ e : hxsl_TExprDef.TVar(v3.v), t : v3.v.type, p : e.p},e21), t : e.t, p : e.p};
 					} else {
-						var v4 = _g9;
+						var v4 = _g11;
 						if(!this.locals.h.hasOwnProperty(v4.id)) {
 							var e11 = this.mapExprVar(e1);
 							var e22 = this.mapExprVar(e2);
@@ -70857,13 +70869,13 @@ hxsl_Linker.prototype = {
 					}
 					break;
 				case 9:
-					var _g11 = _g1.regs;
-					var _g10 = _g1.e;
-					var _g14 = _g10.t;
-					var _g13 = _g10.p;
-					var _g12 = _g10.e;
-					if(_g12._hx_index == 1) {
-						var v6 = _g12.v;
+					var _g3 = _g1.regs;
+					var _g2 = _g1.e;
+					var _g6 = _g2.t;
+					var _g5 = _g2.p;
+					var _g4 = _g2.e;
+					if(_g4._hx_index == 1) {
+						var v6 = _g4.v;
 						if(!this.locals.h.hasOwnProperty(v6.id)) {
 							var e12 = this.mapExprVar(e1);
 							var e23 = this.mapExprVar(e2);
@@ -70879,7 +70891,7 @@ hxsl_Linker.prototype = {
 				}
 				break;
 			case 20:
-				var _g15 = op.op;
+				var _g8 = op.op;
 				switch(_g1._hx_index) {
 				case 1:
 					var v8 = _g1.v;
@@ -70894,13 +70906,13 @@ hxsl_Linker.prototype = {
 					}
 					break;
 				case 9:
-					var _g4 = _g1.regs;
-					var _g3 = _g1.e;
-					var _g7 = _g3.t;
-					var _g6 = _g3.p;
-					var _g5 = _g3.e;
-					if(_g5._hx_index == 1) {
-						var v10 = _g5.v;
+					var _g111 = _g1.regs;
+					var _g10 = _g1.e;
+					var _g14 = _g10.t;
+					var _g13 = _g10.p;
+					var _g12 = _g10.e;
+					if(_g12._hx_index == 1) {
+						var v10 = _g12.v;
 						if(!this.locals.h.hasOwnProperty(v10.id)) {
 							var e14 = this.mapExprVar(e1);
 							var e25 = this.mapExprVar(e2);
@@ -73568,26 +73580,26 @@ hxsl_Splitter.prototype = {
 			var _g7 = _g.op;
 			switch(_g7._hx_index) {
 			case 4:
-				var _g23 = _g8.t;
-				var _g22 = _g8.p;
-				var _g21 = _g8.e;
-				switch(_g21._hx_index) {
+				var _g12 = _g8.t;
+				var _g11 = _g8.p;
+				var _g10 = _g8.e;
+				switch(_g10._hx_index) {
 				case 1:
 					var e1 = _g9;
-					var v1 = _g21.v;
+					var v1 = _g10.v;
 					var inf1 = this.get(v1);
 					inf1.write++;
 					this.checkExpr(e1);
 					break;
 				case 9:
-					var _g26 = _g21.regs;
-					var _g25 = _g21.e;
-					var _g29 = _g25.t;
-					var _g28 = _g25.p;
-					var _g27 = _g25.e;
-					if(_g27._hx_index == 1) {
+					var _g15 = _g10.regs;
+					var _g14 = _g10.e;
+					var _g18 = _g14.t;
+					var _g17 = _g14.p;
+					var _g16 = _g14.e;
+					if(_g16._hx_index == 1) {
 						var e2 = _g9;
-						var v2 = _g27.v;
+						var v2 = _g16.v;
 						var inf2 = this.get(v2);
 						inf2.write++;
 						this.checkExpr(e2);
@@ -73600,14 +73612,14 @@ hxsl_Splitter.prototype = {
 				}
 				break;
 			case 20:
-				var _g10 = _g7.op;
-				var _g13 = _g8.t;
-				var _g12 = _g8.p;
-				var _g11 = _g8.e;
-				switch(_g11._hx_index) {
+				var _g20 = _g7.op;
+				var _g23 = _g8.t;
+				var _g22 = _g8.p;
+				var _g21 = _g8.e;
+				switch(_g21._hx_index) {
 				case 1:
 					var e3 = _g9;
-					var v3 = _g11.v;
+					var v3 = _g21.v;
 					var inf3 = this.get(v3);
 					if(inf3.write == 0) {
 						inf3.requireInit = true;
@@ -73617,14 +73629,14 @@ hxsl_Splitter.prototype = {
 					this.checkExpr(e3);
 					break;
 				case 9:
-					var _g16 = _g11.regs;
-					var _g15 = _g11.e;
-					var _g19 = _g15.t;
-					var _g18 = _g15.p;
-					var _g17 = _g15.e;
-					if(_g17._hx_index == 1) {
+					var _g26 = _g21.regs;
+					var _g25 = _g21.e;
+					var _g29 = _g25.t;
+					var _g28 = _g25.p;
+					var _g27 = _g25.e;
+					if(_g27._hx_index == 1) {
 						var e4 = _g9;
-						var v4 = _g17.v;
+						var v4 = _g27.v;
 						var inf4 = this.get(v4);
 						if(inf4.write == 0) {
 							inf4.requireInit = true;
