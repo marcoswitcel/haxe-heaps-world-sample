@@ -35,7 +35,9 @@ class Main extends hxd.App {
     world.done();
 
     lightSetup();
-    shadowsSetup();
+    if (!config.isLightDemo()) {
+      shadowsSetup();
+    }
     particlesSetup();
     cameraSetup();
   }
