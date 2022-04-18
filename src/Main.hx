@@ -1,5 +1,6 @@
 package;
 
+import h2d.Text;
 import h3d.Vector;
 import h3d.col.Bounds;
 import h3d.parts.GpuParticles;
@@ -40,6 +41,7 @@ class Main extends hxd.App {
     }
     particlesSetup();
     cameraSetup();
+    setupText();
   }
   
   function cameraSetup() {
@@ -75,6 +77,16 @@ class Main extends hxd.App {
   function lightSetup() {
     new DirLight(new Vector(0.3, -0.4, -0.9), s3d);
     s3d.lightSystem.ambientLight.setColor(0x909090);
+  }
+
+  function setupText() {
+    var font = hxd.Res.customFont.toFont();
+    var text = new Text(font, s2d);
+    text.textColor = 0xFFFFFF;
+    text.text = config.isLightDemo() ? "versão simplificada" : "versão completa";
+    text.x = 10;
+    text.y = 10;
+    text.scale(2);
   }
 
   static function main() {
