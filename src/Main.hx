@@ -15,6 +15,8 @@ class Main extends hxd.App {
   private var world:World;
   private var shadow:DefaultShadowMap;
   private var config:AppConfig;
+  private var titleText:Text;
+  private var fpsText:Text;
 
   public function new(config:AppConfig) {
     super();
@@ -43,6 +45,10 @@ class Main extends hxd.App {
     cameraSetup();
     setupText();
   }
+
+  override function update(dt:Float) {
+    fpsText.text = "fps: " + Std.int(hxd.Timer.fps());
+	}
   
   function cameraSetup() {
     s3d.camera.target.set(config.worldSize * .56, config.worldSize * .56, 0);
@@ -81,12 +87,20 @@ class Main extends hxd.App {
 
   function setupText() {
     var font = hxd.Res.customFont.toFont();
-    var text = new Text(font, s2d);
-    text.textColor = 0xFFFFFF;
-    text.text = config.isLightDemo() ? "versão simplificada" : "versão completa";
-    text.x = 10;
-    text.y = 10;
-    text.scale(2);
+
+    titleText = new Text(font, s2d);
+    titleText.textColor = 0xFFFFFF;
+    titleText.text = config.isLightDemo() ? "versão simplificada" : "versão completa";
+    titleText.x = 10;
+    titleText.y = 10;
+    titleText.scale(3);
+
+    fpsText = new Text(font, s2d);
+    fpsText.textColor = 0xFFFFFF;
+    fpsText.text = "-";
+    fpsText.x = 10;
+    fpsText.y = 40;
+    fpsText.scale(3);
   }
 
   static function main() {
