@@ -345,17 +345,19 @@ Main.main = function() {
 	var config = $window.get_width() < 900 ? new AppConfig(75,750,16,32,true) : new AppConfig(1000,10000,64,128,false);
 	new Main(config);
 	if(config.isLightDemo()) {
-		haxe_Log.trace("Rodando versão leve",{ fileName : "src/Main.hx", lineNumber : 99, className : "Main", methodName : "main"});
+		haxe_Log.trace("Rodando versão leve",{ fileName : "src/Main.hx", lineNumber : 113, className : "Main", methodName : "main"});
 	} else {
-		haxe_Log.trace("Rodando versão completa",{ fileName : "src/Main.hx", lineNumber : 101, className : "Main", methodName : "main"});
+		haxe_Log.trace("Rodando versão completa",{ fileName : "src/Main.hx", lineNumber : 115, className : "Main", methodName : "main"});
 	}
-	haxe_Log.trace("Rodando na Web",{ fileName : "src/Main.hx", lineNumber : 105, className : "Main", methodName : "main"});
+	haxe_Log.trace("Rodando na Web",{ fileName : "src/Main.hx", lineNumber : 119, className : "Main", methodName : "main"});
 };
 Main.__super__ = hxd_App;
 Main.prototype = $extend(hxd_App.prototype,{
 	world: null
 	,shadow: null
 	,config: null
+	,titleText: null
+	,fpsText: null
 	,init: function() {
 		this.world = new h3d_scene_World(this.config.chunkSize,this.config.worldSize,this.s3d);
 		var t = this.world.loadModel(hxd_Res.get_loader().loadCache("tree.hmd",hxd_res_Model));
@@ -377,6 +379,9 @@ Main.prototype = $extend(hxd_App.prototype,{
 		this.particlesSetup();
 		this.cameraSetup();
 		this.setupText();
+	}
+	,update: function(dt) {
+		this.fpsText.set_text("fps: " + (hxd_Timer.fps() | 0));
 	}
 	,cameraSetup: function() {
 		var _this = this.s3d.camera.target;
@@ -476,19 +481,38 @@ Main.prototype = $extend(hxd_App.prototype,{
 	}
 	,setupText: function() {
 		var font = hxd_Res.get_loader().loadCache("customFont.fnt",hxd_res_BitmapFont).toFont();
-		var text = new h2d_Text(font,this.s2d);
-		text.set_textColor(16777215);
-		text.set_text(this.config.isLightDemo() ? "versão simplificada" : "versão completa");
-		text.posChanged = true;
-		text.x = 10;
-		text.posChanged = true;
-		text.y = 10;
-		var _g = text;
+		this.titleText = new h2d_Text(font,this.s2d);
+		this.titleText.set_textColor(16777215);
+		this.titleText.set_text(this.config.isLightDemo() ? "versão simplificada" : "versão completa");
+		var _this = this.titleText;
+		_this.posChanged = true;
+		_this.x = 10;
+		var _this1 = this.titleText;
+		_this1.posChanged = true;
+		_this1.y = 10;
+		var _this2 = this.titleText;
+		var _g = _this2;
 		_g.posChanged = true;
-		_g.scaleX *= 2;
-		var _g1 = text;
+		_g.scaleX *= 3;
+		var _g1 = _this2;
 		_g1.posChanged = true;
-		_g1.scaleY *= 2;
+		_g1.scaleY *= 3;
+		this.fpsText = new h2d_Text(font,this.s2d);
+		this.fpsText.set_textColor(16777215);
+		this.fpsText.set_text("-");
+		var _this3 = this.fpsText;
+		_this3.posChanged = true;
+		_this3.x = 10;
+		var _this4 = this.fpsText;
+		_this4.posChanged = true;
+		_this4.y = 40;
+		var _this5 = this.fpsText;
+		var _g2 = _this5;
+		_g2.posChanged = true;
+		_g2.scaleX *= 3;
+		var _g3 = _this5;
+		_g3.posChanged = true;
+		_g3.scaleY *= 3;
 	}
 	,__class__: Main
 });
