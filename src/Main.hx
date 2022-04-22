@@ -44,7 +44,7 @@ class Main extends hxd.App {
     }
     particlesSetup();
     cameraSetup();
-    setupText();
+    textSetup();
     skySetup();
   }
 
@@ -87,7 +87,7 @@ class Main extends hxd.App {
     s3d.lightSystem.ambientLight.setColor(0x909090);
   }
 
-  function setupText() {
+  function textSetup() {
     var font = hxd.Res.customFont.toFont();
 
     titleText = new Text(font, s2d);
@@ -121,7 +121,7 @@ class Main extends hxd.App {
 
     var sky = new h3d.prim.Sphere(config.worldSize, config.chunkSize, config.chunkSize);
     sky.addNormals();
-    
+
     var skyMesh = new h3d.scene.Mesh(sky, s3d);
     skyMesh.setPosition(config.worldSize / 2, config.worldSize / 2, 0);
     skyMesh.material.mainPass.culling = Front;
