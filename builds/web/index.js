@@ -345,11 +345,11 @@ Main.main = function() {
 	var config = $window.get_width() < 900 ? new AppConfig(75,750,16,32,true) : new AppConfig(1000,10000,64,128,false);
 	new Main(config);
 	if(config.isLightDemo()) {
-		haxe_Log.trace("Rodando versão leve",{ fileName : "src/Main.hx", lineNumber : 113, className : "Main", methodName : "main"});
+		haxe_Log.trace("Rodando versão leve",{ fileName : "src/Main.hx", lineNumber : 139, className : "Main", methodName : "main"});
 	} else {
-		haxe_Log.trace("Rodando versão completa",{ fileName : "src/Main.hx", lineNumber : 115, className : "Main", methodName : "main"});
+		haxe_Log.trace("Rodando versão completa",{ fileName : "src/Main.hx", lineNumber : 141, className : "Main", methodName : "main"});
 	}
-	haxe_Log.trace("Rodando na Web",{ fileName : "src/Main.hx", lineNumber : 119, className : "Main", methodName : "main"});
+	haxe_Log.trace("Rodando na Web",{ fileName : "src/Main.hx", lineNumber : 145, className : "Main", methodName : "main"});
 };
 Main.__super__ = hxd_App;
 Main.prototype = $extend(hxd_App.prototype,{
@@ -378,7 +378,8 @@ Main.prototype = $extend(hxd_App.prototype,{
 		}
 		this.particlesSetup();
 		this.cameraSetup();
-		this.setupText();
+		this.textSetup();
+		this.skySetup();
 	}
 	,update: function(dt) {
 		this.fpsText.set_text("fps: " + (hxd_Timer.fps() | 0));
@@ -479,7 +480,7 @@ Main.prototype = $extend(hxd_App.prototype,{
 		_this.z = 0.564705882352941169;
 		_this.w = 0.;
 	}
-	,setupText: function() {
+	,textSetup: function() {
 		var font = hxd_Res.get_loader().loadCache("customFont.fnt",hxd_res_BitmapFont).toFont();
 		this.titleText = new h2d_Text(font,this.s2d);
 		this.titleText.set_textColor(16777215);
@@ -513,6 +514,112 @@ Main.prototype = $extend(hxd_App.prototype,{
 		var _g3 = _this5;
 		_g3.posChanged = true;
 		_g3.scaleY *= 3;
+	}
+	,skySetup: function() {
+		var skyTexture = new h3d_mat_Texture(128,128,[h3d_mat_TextureFlags.Cube,h3d_mat_TextureFlags.MipMapped]);
+		var bmp = hxd_Pixels.alloc(skyTexture.width,skyTexture.height,h3d_mat_Texture.nativeFormat);
+		var _g = 0;
+		while(_g < 128) {
+			var x = _g++;
+			var _g1 = 0;
+			while(_g1 < 128) {
+				var y = _g1++;
+				bmp.setPixel(x,y,5217241);
+			}
+		}
+		skyTexture.uploadPixels(bmp,0,0);
+		var _g2 = 0;
+		while(_g2 < 128) {
+			var x1 = _g2++;
+			var _g3 = 0;
+			while(_g3 < 128) {
+				var y1 = _g3++;
+				bmp.setPixel(x1,y1,5217241);
+			}
+		}
+		skyTexture.uploadPixels(bmp,0,1);
+		var _g4 = 0;
+		while(_g4 < 128) {
+			var x2 = _g4++;
+			var _g5 = 0;
+			while(_g5 < 128) {
+				var y2 = _g5++;
+				bmp.setPixel(x2,y2,5217241);
+			}
+		}
+		skyTexture.uploadPixels(bmp,0,2);
+		var _g6 = 0;
+		while(_g6 < 128) {
+			var x3 = _g6++;
+			var _g7 = 0;
+			while(_g7 < 128) {
+				var y3 = _g7++;
+				bmp.setPixel(x3,y3,5217241);
+			}
+		}
+		skyTexture.uploadPixels(bmp,0,3);
+		var _g8 = 0;
+		while(_g8 < 128) {
+			var x4 = _g8++;
+			var _g9 = 0;
+			while(_g9 < 128) {
+				var y4 = _g9++;
+				bmp.setPixel(x4,y4,5217241);
+			}
+		}
+		skyTexture.uploadPixels(bmp,0,4);
+		var _g10 = 0;
+		while(_g10 < 128) {
+			var x5 = _g10++;
+			var _g11 = 0;
+			while(_g11 < 128) {
+				var y5 = _g11++;
+				bmp.setPixel(x5,y5,5217241);
+			}
+		}
+		skyTexture.uploadPixels(bmp,0,5);
+		skyTexture.set_mipMap(h3d_mat_MipMap.Linear);
+		var sky = new h3d_prim_Sphere(this.config.worldSize,this.config.chunkSize,this.config.chunkSize);
+		sky.addNormals();
+		var skyMesh = new h3d_scene_Mesh(sky,null,this.s3d);
+		var x6 = this.config.worldSize / 2;
+		var y6 = this.config.worldSize / 2;
+		skyMesh.x = x6;
+		var f = 1;
+		var b = true;
+		if(b) {
+			skyMesh.flags |= f;
+		} else {
+			skyMesh.flags &= ~f;
+		}
+		skyMesh.y = y6;
+		var f1 = 1;
+		var b1 = true;
+		if(b1) {
+			skyMesh.flags |= f1;
+		} else {
+			skyMesh.flags &= ~f1;
+		}
+		skyMesh.z = 0;
+		var f2 = 1;
+		var b2 = true;
+		if(b2) {
+			skyMesh.flags |= f2;
+		} else {
+			skyMesh.flags &= ~f2;
+		}
+		var f3 = 1;
+		var b3 = true;
+		if(b3) {
+			skyMesh.flags |= f3;
+		} else {
+			skyMesh.flags &= ~f3;
+		}
+		skyMesh.material.passes.set_culling(h3d_mat_Face.Front);
+		skyMesh.material.passes.addShader(new h3d_shader_CubeMap(skyTexture));
+		var _this = skyMesh.material;
+		_this.set_castShadows(false);
+		_this.set_receiveShadows(false);
 	}
 	,__class__: Main
 });
@@ -39360,6 +39467,111 @@ h3d_prim_RawPrimitive.prototype = $extend(h3d_prim_Primitive.prototype,{
 	}
 	,__class__: h3d_prim_RawPrimitive
 });
+var h3d_prim_Sphere = function(ray,segsW,segsH) {
+	if(segsH == null) {
+		segsH = 6;
+	}
+	if(segsW == null) {
+		segsW = 8;
+	}
+	if(ray == null) {
+		ray = 1.;
+	}
+	this.ray = ray;
+	this.segsH = segsH;
+	this.segsW = segsW;
+	var dp = Math.PI * 2 / segsW;
+	var pts = [];
+	var this1 = new Array(0);
+	var idx = this1;
+	var dx = 1;
+	var dy = segsW + 1;
+	var _g = 0;
+	var _g1 = segsH + 1;
+	while(_g < _g1) {
+		var y = _g++;
+		var t = y / segsH * Math.PI;
+		var st = Math.sin(t);
+		var pz = Math.cos(t);
+		var p = 0.;
+		var _g2 = 0;
+		var _g11 = segsW + 1;
+		while(_g2 < _g11) {
+			var x = _g2++;
+			var px = st * Math.cos(p);
+			var py = st * Math.sin(p);
+			var i = pts.length;
+			pts.push(new h3d_col_Point(px * ray,py * ray,pz * ray));
+			p += dp;
+		}
+	}
+	var _g21 = 0;
+	var _g3 = segsH;
+	while(_g21 < _g3) {
+		var y1 = _g21++;
+		var _g22 = 0;
+		var _g31 = segsW;
+		while(_g22 < _g31) {
+			var x1 = _g22++;
+			var v1 = x1 + 1 + y1 * (segsW + 1);
+			var v2 = x1 + y1 * (segsW + 1);
+			var v3 = x1 + (y1 + 1) * (segsW + 1);
+			var v4 = x1 + 1 + (y1 + 1) * (segsW + 1);
+			if(y1 != 0) {
+				idx.push(v1);
+				idx.push(v2);
+				idx.push(v4);
+			}
+			if(y1 != segsH - 1) {
+				idx.push(v2);
+				idx.push(v3);
+				idx.push(v4);
+			}
+		}
+	}
+	h3d_prim_Polygon.call(this,pts,idx);
+};
+$hxClasses["h3d.prim.Sphere"] = h3d_prim_Sphere;
+h3d_prim_Sphere.__name__ = "h3d.prim.Sphere";
+h3d_prim_Sphere.defaultUnitSphere = function() {
+	var engine = h3d_Engine.CURRENT;
+	var s = engine.resCache.h[h3d_prim_Sphere.__id__];
+	if(s != null) {
+		return s;
+	}
+	s = new h3d_prim_Sphere(1,16,16);
+	s.addNormals();
+	s.addUVs();
+	engine.resCache.set(h3d_prim_Sphere,s);
+	return s;
+};
+h3d_prim_Sphere.__super__ = h3d_prim_Polygon;
+h3d_prim_Sphere.prototype = $extend(h3d_prim_Polygon.prototype,{
+	ray: null
+	,segsH: null
+	,segsW: null
+	,getCollider: function() {
+		return new h3d_col_Sphere(this.translatedX,this.translatedY,this.translatedZ,this.ray * this.scaled);
+	}
+	,addNormals: function() {
+		this.normals = this.points;
+	}
+	,addUVs: function() {
+		this.uvs = [];
+		var _g = 0;
+		var _g1 = this.segsH + 1;
+		while(_g < _g1) {
+			var y = _g++;
+			var _g2 = 0;
+			var _g11 = this.segsW + 1;
+			while(_g2 < _g11) {
+				var x = _g2++;
+				this.uvs.push(new h3d_prim_UV(1 - x / this.segsW,y / this.segsH));
+			}
+		}
+	}
+	,__class__: h3d_prim_Sphere
+});
 var h3d_scene_CameraController = function(distance,parent) {
 	this.targetOffset = new h3d_Vector(0,0,0,0);
 	this.targetPos = new h3d_Vector(0.4,Math.PI / 4,Math.PI * 5 / 13);
@@ -44940,6 +45152,63 @@ h3d_shader_ColorMatrix.prototype = $extend(hxsl_Shader.prototype,{
 		return s;
 	}
 	,__class__: h3d_shader_ColorMatrix
+});
+var h3d_shader_CubeMap = function(texture,reflection) {
+	if(reflection == null) {
+		reflection = false;
+	}
+	hxsl_Shader.call(this);
+	this.texture__ = texture;
+	this.constModified = true;
+	this.reflection__ = reflection;
+};
+$hxClasses["h3d.shader.CubeMap"] = h3d_shader_CubeMap;
+h3d_shader_CubeMap.__name__ = "h3d.shader.CubeMap";
+h3d_shader_CubeMap.__super__ = hxsl_Shader;
+h3d_shader_CubeMap.prototype = $extend(hxsl_Shader.prototype,{
+	reflection__: null
+	,get_reflection: function() {
+		return this.reflection__;
+	}
+	,set_reflection: function(_v) {
+		this.constModified = true;
+		return this.reflection__ = _v;
+	}
+	,texture__: null
+	,get_texture: function() {
+		return this.texture__;
+	}
+	,set_texture: function(_v) {
+		return this.texture__ = _v;
+	}
+	,updateConstants: function(globals) {
+		this.constBits = 0;
+		if(this.reflection__) {
+			this.constBits |= 1;
+		}
+		this.updateConstantsFinal(globals);
+	}
+	,getParamValue: function(index) {
+		switch(index) {
+		case 0:
+			return this.reflection__;
+		case 1:
+			return this.texture__;
+		default:
+		}
+		return null;
+	}
+	,getParamFloatValue: function(index) {
+		return 0.;
+	}
+	,clone: function() {
+		var s = Object.create(h3d_shader_CubeMap.prototype);
+		s.shader = this.shader;
+		s.reflection__ = this.reflection__;
+		s.texture__ = this.texture__;
+		return s;
+	}
+	,__class__: h3d_shader_CubeMap
 });
 var h3d_shader_DirLight = function() {
 	this.direction__ = new h3d_Vector();
@@ -78750,6 +79019,7 @@ h3d_shader_Blur.SRC = "HXSLD2gzZC5zaGFkZXIuQmx1choBBWlucHV0DQECAghwb3NpdGlvbgUKA
 h3d_shader_ColorAdd.SRC = "HXSLE2gzZC5zaGFkZXIuQ29sb3JBZGQDAQpwaXhlbENvbG9yBQwEAAACBWNvbG9yBQsCAAADCGZyYWdtZW50DgYAAAEBAwAABQEGgAoCAQUMkgAFCwICBQsFCwA";
 h3d_shader_ColorKey.SRC = "HXSLE2gzZC5zaGFkZXIuQ29sb3JLZXkDAQhjb2xvcktleQUMAgAAAgx0ZXh0dXJlQ29sb3IFDAQAAAMIZnJhZ21lbnQOBgAAAQEDAAAFAggEBWNkaWZmBQwEAAAGAwICBQwCAQUMBQwACwYJCQMdDgICBAUMAgQFDAMBA/Fo44i1+OQ+AwIMAAAAAA";
 h3d_shader_ColorMatrix.SRC = "HXSLFmgzZC5zaGFkZXIuQ29sb3JNYXRyaXgDAQpwaXhlbENvbG9yBQwEAAACBm1hdHJpeAcCAAADCGZyYWdtZW50DgYAAAEBAwAABQEGBAIBBQwJAyoOAgoEBgEJAyoOAgoCAQUMkgAFCwEDAAAAAAAA8D8DBQwCAgcFDAUMkgAFCwoEBgECAQUMAgIHBQwFDAwAAwUMBQwA";
+h3d_shader_CubeMap.SRC = "HXSLEmgzZC5zaGFkZXIuQ3ViZU1hcAcBCnBpeGVsQ29sb3IFDAQAAAIRdHJhbnNmb3JtZWROb3JtYWwFCwQAAAMKcmVmbGVjdGlvbgICAAEAAAAAAAQHdGV4dHVyZQwCAAAFBmNhbWVyYQ0BAQYIcG9zaXRpb24FCwAFAAAAAAcYcGl4ZWxUcmFuc2Zvcm1lZFBvc2l0aW9uBQsEAAAICGZyYWdtZW50DgYAAAEBCAAABQIICQFuBQsEAAALAgMCCQMgDgIHAwkDHw4BBgMCBgULAgcFCwULBQsFCwICBQsFCwICBQsFCwAGgQoCAQUMkgAFCwoJAyEOAgIEDAIJBQsFDJIABQsFCwA";
 h3d_shader_DirLight.SRC = "HXSLE2gzZC5zaGFkZXIuRGlyTGlnaHQNAQVjb2xvcgULAgAAAglkaXJlY3Rpb24FCwIAAAMOZW5hYmxlU3BlY3VsYXICAgABAAAAAAAEBmNhbWVyYQ0BAQUIcG9zaXRpb24FCwAEAAAAAAYKbGlnaHRDb2xvcgULBAAABw9saWdodFBpeGVsQ29sb3IFCwQAAAgRdHJhbnNmb3JtZWROb3JtYWwFCwQAAAkTdHJhbnNmb3JtZWRQb3NpdGlvbgULBAAACglzcGVjUG93ZXIDBAAACwlzcGVjQ29sb3IFCwQAAAwMY2FsY0xpZ2h0aW5nDgYAAA0GdmVydGV4DgYAAA4IZnJhZ21lbnQOBgAAAwMMAAULBQUIDwRkaWZmAwQAAAkDFg4CCQMdDgICCAULBwMCAgULBQsDAQMAAAAAAAAAAAMDAAsHAgIDAgINBgECAQULAg8DBQsAAAAIEAFyBQsEAAAJAx8OAQkDIA4CAgIFCwIIBQsFCwULAAgRCXNwZWNWYWx1ZQMEAAAJAxYOAgkDHQ4CAhAFCwkDHw4BBAYDAgUFCwIJBQsFCwULBQsDAQMAAAAAAAAAAAMDAA0GAQIBBQsEBgACDwMGAQILBQsJAwgOAgIRAwIKAwMFCwULBQsFCwAAAA0AAAUBBoAKAgYFC5IABQsJAgwOAAULBQsAAQ4AAAUBBoAKAgcFC5IABQsJAgwOAAULBQsA";
 h3d_shader_DirShadow.SRC = "HXSLFGgzZC5zaGFkZXIuRGlyU2hhZG93EgEGZW5hYmxlAgIAAQAAAAAAAgdVU0VfRVNNAgIAAQAAAAAAAwtzaGFkb3dQb3dlcgMCAAAEB1VTRV9QQ0YCAgABAAAAAAAFCnBjZlF1YWxpdHkBAgABAAAAAAAGCHBjZlNjYWxlAwIAAAcJc2hhZG93UmVzBQoCAAAICXNoYWRvd01hcBEBAgAACQpzaGFkb3dQcm9qCAIAAAoKc2hhZG93QmlhcwMCAAALE3RyYW5zZm9ybWVkUG9zaXRpb24FCwQAAAwGc2hhZG93AwQAAA0JZGlyU2hhZG93AwQAAA4OcG9pc3NvbkRpc2tMb3cPBQwABAIAAA8PcG9pc3NvbkRpc2tIaWdoDwUMAAwCAAAQE3BvaXNzb25EaXNrVmVyeUhpZ2gPBQwAQAIAABEEcmFuZA4GAAASCGZyYWdtZW50DgYAAAIDEQETAXYDBAAAAwUCCBQCZHADBAAACQMdDgIJAyoOAQITAwUMCQMqDgQBA18pyxDH+ilAAwED9P3UeOmOU0ADAQOiRbbz/ZRGQAMBA1CNl24Sq1dAAwUMAwANCQMTDgEGAQkDAg4BAhQDAwEDUPwYc9Fd5UADAwMAAAESAAAFAgsCAQIFAQsCBAIFBwYEAgwDAQMAAAAAAADwPwMDCBUJdGV4ZWxTaXplBQoEAAAGAgEDAAAAAAAA8D8DAgcFCgUKAAgWCXNoYWRvd1BvcwULBAAABgECCwULAgkIBQsACBcIc2hhZG93VXYFCgQAAAkDOg4BCgIWBQsRAAUKBQoACBgEek1heAMEAAAJAzUOAQoCFgULCAADAwAIGQNyb3QDBAAABgEGAQkCEQ4BBgAGAAoCCwULAAADCgILBQsEAAMDCgILBQsIAAMDAwEDH4XrUbgeCUADAwEDAAAAAAAAAEADAwATBAIFAQEDAQECAQAAAAEFAggaDnNhbXBsZVN0cmVuZ3RoAwQAAAYCAQMAAAAAAADwPwMBAwAAAAAAABBAAwMADhsBaQEEAAAGFQECAAAAAAEBAgQAAAABDwEAAAUECBwGb2Zmc2V0BQoEAAAGAQYBChECDg8FDAAEAhsBBQwRAAUKAhUFCgUKAgYDBQoABgQCHAUKCQMoDgIGAwYBCQMDDgECGQMDCgIcBQoAAAMDBgEJAwIOAQIZAwMKAhwFCgQAAwMDBgAGAQkDAw4BAhkDAwoCHAUKBAADAwYBCQMCDgECGQMDCgIcBQoAAAMDAwUKBQoIHQVkZXB0aAMEAAAJA0AOAwIIEQEGAAIXBQoCHAUKBQoBAwAAAAAAAAAAAwMACwYHBgMCGAMCCgMDAh0DAgaDAgwDAhoDAwAAAAAAAQECAgAAAAEFAggeDnNhbXBsZVN0cmVuZ3RoAwQAAAYCAQMAAAAAAADwPwMBAwAAAAAAAChAAwMADh8BaQEEAAAGFQECAAAAAAEBAgwAAAABDwEAAAUECCAGb2Zmc2V0BQoEAAAGAQYBChECDw8FDAAMAh8BBQwRAAUKAhUFCgUKAgYDBQoABgQCIAUKCQMoDgIGAwYBCQMDDgECGQMDCgIgBQoAAAMDBgEJAwIOAQIZAwMKAiAFCgQAAwMDBgAGAQkDAw4BAhkDAwoCIAUKBAADAwYBCQMCDgECGQMDCgIgBQoAAAMDAwUKBQoIIQVkZXB0aAMEAAAJA0AOAwIIEQEGAAIXBQoCIAUKBQoBAwAAAAAAAAAAAwMACwYHBgMCGAMCCgMDAiEDAgaDAgwDAh4DAwAAAAAAAQECAwAAAAEFAggiDnNhbXBsZVN0cmVuZ3RoAwQAAAYCAQMAAAAAAADwPwMBAwAAAAAAAFBAAwMADiMBaQEEAAAGFQECAAAAAAEBAkAAAAABDwEAAAUECCQGb2Zmc2V0BQoEAAAGAQYBChECEA8FDABAAiMBBQwRAAUKAhUFCgUKAgYDBQoABgQCJAUKCQMoDgIGAwYBCQMDDgECGQMDCgIkBQoAAAMDBgEJAwIOAQIZAwMKAiQFCgQAAwMDBgAGAQkDAw4BAhkDAwoCJAUKBAADAwYBCQMCDgECGQMDCgIkBQoAAAMDAwUKBQoIJQVkZXB0aAMEAAAJA0AOAwIIEQEGAAIXBQoCJAUKBQoBAwAAAAAAAAAAAwMACwYHBgMCGAMCCgMDAiUDAgaDAgwDAiIDAwAAAAAAAAAACwICAgUFCCYJc2hhZG93UG9zBQsEAAAGAQILBQsCCQgFCwAIJwVkZXB0aAMEAAAJAz8OAgIIEQEJAzoOAQoCJgULEQAFCgUKAwAIKAR6TWF4AwQAAAkDNQ4BCgImBQsIAAMDAAgpBWRlbHRhAwQAAAYDCQMVDgIEBgACJwMCCgMDAwIoAwMCKAMDAAYEAgwDCQM1DgEJAwkOAQYBAgMDAikDAwMDAwAFBAgqCXNoYWRvd1BvcwULBAAABgECCwULAgkIBQsACCsIc2hhZG93VXYFCgQAAAkDOg4BCgIqBQsRAAUKBQoACCwFZGVwdGgDBAAACQM/DgICCBEBCgIrBQoRAAUKAwAGBAIMAwsGBwYDCgIqBQsIAAMCCgMDAiwDAgEDAAAAAAAAAAADAQMAAAAAAADwPwMDAwAAAAAAAAYEAg0DAgwDAwA";
 h3d_shader_GenTexture.SRC = "HXSLFWgzZC5zaGFkZXIuR2VuVGV4dHVyZQoBBWlucHV0DQECAghwb3NpdGlvbgUKAQEAAwJ1dgUKAQEAAQAABAVmbGlwWQMCAAAFBm91dHB1dA0CAgYIcG9zaXRpb24FDAQFAAcFY29sb3IFDAQFAAQAAAgKcGl4ZWxDb2xvcgUMBAAACQxjYWxjdWxhdGVkVVYFCgQAAAoEbW9kZQECAAEAAAAAAAsFY29sb3IFDAIAAAwIX19pbml0X18OBgAADQZ2ZXJ0ZXgOBgAADghmcmFnbWVudA4GAAADAgwAAAUCBgQCBwUMAggFDAUMBgQCCQUKAgMFCgUKAAANAAAFAQYEAgYFDAkDKg4ECgICBQoAAAMGAQoCAgUKBAADAgQDAwEDAAAAAAAAAAADAQMAAAAAAADwPwMFDAUMAAEOAAAFARMEAgoBAQEBAQIAAAAAAQUBBgQCCAUMCwYHCQMbDgEKAgYFDBEABQoDAQMAAAAAAADwPwMCCQMqDgEBAwAAAAAAAAAAAwUMAgsFDAUMBQwAAAAA";
