@@ -3,11 +3,12 @@ package;
 import h2d.Text;
 import h3d.Vector;
 import h3d.col.Bounds;
+import h3d.mat.Texture;
 import h3d.parts.GpuParticles;
 import h3d.pass.DefaultShadowMap;
 import h3d.scene.CameraController;
-import h3d.scene.World;
 import h3d.scene.World.WorldModel;
+import h3d.scene.World;
 import h3d.scene.fwd.DirLight;
 
 class Main extends hxd.App {
@@ -44,11 +45,12 @@ class Main extends hxd.App {
     particlesSetup();
     cameraSetup();
     setupText();
+    skySetup();
   }
 
   override function update(dt:Float) {
     fpsText.text = "fps: " + Std.int(hxd.Timer.fps());
-	}
+  }
   
   function cameraSetup() {
     s3d.camera.target.set(config.worldSize * .56, config.worldSize * .56, 0);
@@ -101,6 +103,30 @@ class Main extends hxd.App {
     fpsText.x = 10;
     fpsText.y = 40;
     fpsText.scale(3);
+  }
+
+  public function skySetup() {
+    var skyTexture:Texture = new h3d.mat.Texture(128, 128, [Cube, MipMapped]);
+    var bmp = hxd.Pixels.alloc(skyTexture.width, skyTexture.height, h3d.mat.Texture.nativeFormat);
+
+    for (i in 0...6) {
+      for (x in 0...128) {
+        for (y in 0...128) {
+          bmp.setPixel(x,y, 0x4F9BD9);
+        }
+      }
+      skyTexture.uploadPixels(bmp, 0, i);
+    }
+    skyTexture.mipMap = Linear;
+
+    var sky = new h3d.prim.Sphere(config.worldSize, config.chunkSize, config.chunkSize);
+    sky.addNormals();
+    
+    var skyMesh = new h3d.scene.Mesh(sky, s3d);
+    skyMesh.setPosition(config.worldSize / 2, config.worldSize / 2, 0);
+    skyMesh.material.mainPass.culling = Front;
+    skyMesh.material.mainPass.addShader(new h3d.shader.CubeMap(skyTexture));
+    skyMesh.material.shadows = false;
   }
 
   static function main() {
